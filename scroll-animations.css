@@ -1,0 +1,170 @@
+/* ==========================================================================
+   NEXORA PAY — ULTRA-SMOOTH HARDWARE-ACCELERATED ANIMATIONS
+   ========================================================================== */
+
+/* Scroll Reveal */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms),
+              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.scroll-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Floating animation for badge and pills */
+@keyframes nxFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.pill-top-right {
+  animation: nxFloat 5.5s ease-in-out infinite;
+}
+
+/* Pulse dot animation */
+@keyframes nxPulseRadar {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.65);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 9px rgba(168, 85, 247, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(168, 85, 247, 0);
+  }
+}
+
+.pulse-dot {
+  animation: nxPulseRadar 2.2s infinite cubic-bezier(0.4, 0, 0.6, 1) !important;
+}
+
+/* Live status indicator pulse */
+@keyframes nxLivePulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 10px #34d399;
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(0.85);
+    box-shadow: 0 0 3px #34d399;
+  }
+}
+
+.live-indicator {
+  animation: nxLivePulse 2s ease-in-out infinite !important;
+}
+
+/* Premium Button Shimmer */
+.btn-presentation {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.25s ease;
+}
+
+.btn-presentation::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -80%;
+  width: 45%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.22) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  transition: none;
+}
+
+.btn-presentation:hover::after {
+  left: 140%;
+  transition: left 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-presentation:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.35);
+}
+
+.btn-presentation:active {
+  transform: translateY(0);
+}
+
+.btn-signup-subtle {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.25s ease,
+              background 0.25s ease,
+              box-shadow 0.25s ease;
+}
+
+.btn-signup-subtle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+/* Cards Smooth Hover Elevation */
+.segment-card,
+.core-card,
+.step-card,
+.price-card,
+.sec-box {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.35s ease,
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              background 0.35s ease !important;
+}
+
+.segment-card:hover,
+.core-card:hover,
+.step-card:hover,
+.sec-box:hover {
+  transform: translateY(-5px) !important;
+}
+
+.price-card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5), 0 0 35px rgba(139, 92, 246, 0.16) !important;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .pill-top-right,
+  .pulse-dot,
+  .live-indicator,
+  .btn-presentation::after {
+    animation: none !important;
+  }
+  .segment-card:hover,
+  .core-card:hover,
+  .step-card:hover,
+  .price-card:hover,
+  .sec-box:hover,
+  .btn-presentation:hover,
+  .btn-signup-subtle:hover {
+    transform: none !important;
+  }
+}

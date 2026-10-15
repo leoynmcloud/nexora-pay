@@ -1,0 +1,14 @@
+*.sql
+*.md
+*.cjs
+*.map
+node_modules
+.git
+hero-background-nexora.png
+supabase/
+scripts/test-mercadopago-credentials.js
+scripts/test-mercadopago-pix-10-reais.js
+.env
+.env.*
+**/.env
+**/.env.*

@@ -1,0 +1,1 @@
+(function () { const keys = ['resumo', 'transacoes', 'recebimentos', 'clientes', 'integracoes', 'configuracoes']; document.querySelectorAll('.side-nav a').forEach((link, index) => { link.href = `#${keys[index]}`; }); })();

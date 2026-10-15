@@ -1,0 +1,37 @@
+.recent-access{margin:16px 8px 0;padding:12px 0 0;border-top:1px solid var(--line)}
+.recent-access>small{display:block;margin:0 8px 8px;color:var(--muted);font-size:9px;font-weight:700;letter-spacing:.12em}
+.recent-access [data-recent-links]{display:grid;gap:3px}
+.recent-access [data-recent-links] a{display:block;padding:7px 9px;border-radius:8px;color:var(--muted);font-size:11px;line-height:1.35}
+.recent-access [data-recent-links] a:hover{background:var(--panel2);color:var(--text)}
+.sidebar .recent-access{margin-top:12px}
+.admin-sidebar .recent-access{margin:14px 8px 0}
+.mobile-menu .recent-access{margin:8px 0;padding-top:12px}
+.mobile-menu .recent-access [data-recent-links] a{padding:8px 4px;border:0;font:500 15px 'DM Sans',sans-serif}
+.nx-unavailable{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--panel2);color:var(--muted);font:600 11px 'DM Sans',sans-serif;letter-spacing:0}
+.theme-light .admin-heading p,.theme-light .admin-panel p,.theme-light .admin-stat small{color:#636278}
+.theme-light .admin-panel input{background:#fff;color:#262234;border-color:#d8dce8}
+.theme-light .admin-table-head{color:#737184;border-color:#e4e5ec}
+.theme-light .admin-row{color:#302c3d;border-color:#e8e8ef}
+.theme-light .admin-row small{color:#686879}
+.theme-light .admin-empty{color:#686879}
+.nx-acquirer-choices{display:grid;gap:8px;margin:14px 0;padding:12px;border:1px solid var(--line);border-radius:12px}
+.nx-acquirer-choices legend{padding:0 6px;font-weight:700}
+.nx-acquirer-choice{display:flex;align-items:center;gap:10px;min-height:54px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);cursor:pointer}
+.nx-acquirer-choice:has(input:checked){border-color:var(--purple);box-shadow:0 0 0 2px color-mix(in srgb,var(--purple) 16%,transparent)}
+.nx-acquirer-choice input{accent-color:var(--purple);flex:none}
+.nx-acquirer-choice span{display:grid;gap:3px}
+.nx-acquirer-choice small{color:var(--muted);font-size:12px}
+.nx-acquirer-choice.is-disabled{justify-content:space-between;background:var(--panel2);cursor:not-allowed;opacity:.8}
+.nx-acquirer-badge{padding:4px 8px;border-radius:99px;background:color-mix(in srgb,var(--purple) 12%,white);color:var(--purple);font-size:11px;font-weight:700}
+.theme-light .admin-nav-backdrop{background:#25213966}
+.theme-light .statement{background:linear-gradient(105deg,#fbfaff,#f4f0ff 52%,#fbfaff);border-color:#e5def4}
+.theme-light .statement .how-card{background:#fff;color:var(--text);border-color:var(--line)}
+.theme-light .statement .how-card p{color:var(--muted)}
+.theme-light .statement .how-card>span{background:#f0eafd;color:var(--purple)}
+.nav-links{margin-right:auto;margin-left:36px;justify-content:flex-start}
+.nav-links .recent-access{position:relative;margin:0;padding:0;border:0;white-space:nowrap}
+.nav-links .recent-access>small{display:block;margin:0;color:var(--muted);font-size:11px;font-weight:500;letter-spacing:0;cursor:default}
+.nav-links .recent-access [data-recent-links]{position:absolute;left:0;top:100%;z-index:35;min-width:210px;padding:8px;margin-top:8px;border:1px solid var(--line);border-radius:12px;background:var(--panel);box-shadow:0 16px 40px #0002}
+.nav-links .recent-access [data-recent-links] a{padding:8px;border:0;font-size:12px}
+.theme-light .nav-links a:hover,.theme-light .text-link:hover{color:#191725}
+@media(max-width:850px){.sidebar .recent-access{grid-column:1/-1;margin:4px 0 0}.sidebar .recent-access>small{display:block}.sidebar .recent-access [data-recent-links]{grid-template-columns:repeat(2,minmax(0,1fr))}.mobile-menu .recent-access[hidden]{display:none!important}}

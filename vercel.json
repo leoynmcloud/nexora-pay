@@ -1,0 +1,32 @@
+{
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Referrer-Policy", "value": "no-referrer" },
+        { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains" },
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' https://cdn.jsdelivr.net https://challenges.cloudflare.com https://hcaptcha.com https://*.hcaptcha.com https://www.google.com https://www.gstatic.com https://sdk.mercadopago.com https://http2.mlstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://hcaptcha.com https://*.hcaptcha.com https://*.mercadopago.com https://*.mlstatic.com; font-src 'self' https://fonts.gstatic.com data: https://*.mlstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https://ouqbpslyfnanajkkxrcu.supabase.co wss://ouqbpslyfnanajkkxrcu.supabase.co https://challenges.cloudflare.com https://hcaptcha.com https://*.hcaptcha.com https://www.google.com https://api.mercadopago.com https://*.mercadopago.com https://*.mercadolibre.com https://*.mlstatic.com; frame-src https://challenges.cloudflare.com https://hcaptcha.com https://*.hcaptcha.com https://www.google.com https://*.mercadopago.com https://*.mercadolibre.com https://*.mlstatic.com; upgrade-insecure-requests" }
+      ]
+    },
+    {
+      "source": "/",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/(.*).html",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/v1/:path*",
+      "destination": "https://ouqbpslyfnanajkkxrcu.supabase.co/functions/v1/nexora-api-v1/v1/:path*"
+    }
+  ]
+}

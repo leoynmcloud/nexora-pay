@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="pt-BR" class="theme-light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Painel Nexora Pay</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="nexora-icon.png">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="recent-access.css">
+  <link rel="stylesheet" href="nexora-app.css">
+  <link rel="stylesheet" href="nexora-admin.css">
+  <link rel="stylesheet" href="nexora-admin-modal.css">
+  <link rel="stylesheet" href="nexora-admin-layout.css">
+  <link rel="stylesheet" href="nexora-admin-operations.css">
+  <link rel="stylesheet" href="nexora-admin-payout.css">
+  <link rel="stylesheet" href="mobile-final.css">
+  <link rel="stylesheet" href="mobile-platform-admin.css">
+</head>
+<body class="platform-body admin-body">
+  <div class="admin-layout">
+    <button type="button" class="admin-nav-backdrop" data-admin-menu-close aria-label="Fechar navegação"></button>
+    <a class="admin-skip-link" href="#admin-main">Pular para o conteúdo</a>
+    <aside class="admin-sidebar" id="adminSidebar" aria-label="Navegação do Painel Nexora Pay">
+      <a class="admin-brand" href="nexora-admin.html"><img class="brand-logo-img" src="logo-nexora-purple.svg" alt=""><span>Painel Nexora Pay</span></a>
+      <div style="padding:0 8px 12px;">
+        <button type="button" data-admin-open-logo-modal style="display:inline-flex;align-items:center;gap:6px;background:rgba(124,58,237,0.12);border:1px solid rgba(167,139,250,0.3);border-radius:6px;color:#c4b5fd;font-size:11px;font-weight:600;cursor:pointer;padding:4px 9px;width:100%;justify-content:center;">
+          <span data-nx-icon="image"></span> Mudar logo / aba
+        </button>
+      </div>
+      <div class="admin-workspace"><small>WORKSPACE</small><strong>Nexora Pay</strong><span>Administração</span></div>
+      <section class="recent-access" id="admin-recent-access" data-limit="2" aria-label="Acessado recentemente" hidden><small>ACESSADO RECENTEMENTE</small><div data-recent-links></div></section>
+      <nav class="admin-side-nav" aria-label="Seções administrativas">
+        <div class="admin-nav-label">OPERAÇÃO</div>
+        <a href="#admin-overview" data-admin-nav aria-current="page"><span data-nx-icon="home" aria-hidden="true"></span>Visão geral</a>
+        <div class="admin-nav-label">CLIENTES</div>
+        <a href="#admin-accounts" data-admin-nav><span data-nx-icon="users" aria-hidden="true"></span>Empresas</a>
+        <a href="#admin-kyc" data-admin-nav><span data-nx-icon="history" aria-hidden="true"></span>Onboarding e KYC</a>
+        <div class="admin-nav-label">MOVIMENTAÇÕES</div>
+        <a href="#admin-withdrawals" data-admin-nav><span data-nx-icon="wallet" aria-hidden="true"></span>Saques</a>
+        <a href="#admin-custody" data-admin-nav><span data-nx-icon="shield" aria-hidden="true"></span>Custódia &amp; Conciliação</a>
+        <a href="#admin-fund-holds" class="sr-only" style="display:none" aria-hidden="true">Saldo bloqueado</a>
+        <div class="admin-nav-label">INTEGRAÇÕES</div>
+        <a href="#admin-webhooks" data-admin-nav><span data-nx-icon="activity" aria-hidden="true"></span>Webhooks</a>
+        <div class="admin-nav-label">CONFIGURAÇÃO</div>
+        <a href="#admin-acquirers" data-admin-nav><span data-nx-icon="integrations" aria-hidden="true"></span>Adquirentes</a>
+        <a href="#admin-alerts" data-admin-nav><span data-nx-icon="bell" aria-hidden="true"></span>Alertas de limite</a>
+        <a href="#admin-site" data-admin-nav><span data-nx-icon="globe" aria-hidden="true"></span>Site e aparência</a>
+      </nav>
+      <div class="admin-sidebar-bottom">
+        <a href="platform.html?view=workspace"><span data-nx-icon="arrows"></span>Minha operação</a>
+        <small>Configure o adquirente e a chave de cada cliente para liberar cobranças Pix.</small>
+      </div>
+    </aside>
+
+    <main class="admin-shell admin-main" id="admin-main" tabindex="-1">
+      <header class="admin-header">
+        <button type="button" class="admin-mobile-menu-toggle" data-admin-menu-open aria-label="Abrir navegação" aria-controls="adminSidebar" aria-expanded="false"><span data-nx-icon="menu"></span></button>
+        <div class="admin-header-title"><span class="eyebrow purple">NEXORA PAY · ADMINISTRAÇÃO</span><strong>Admin Operacional</strong></div>
+        <div class="admin-actions">
+          <button class="button outline compact" type="button" data-admin-open-logo-modal aria-label="Mudar logo e ícone da aba">
+            <span data-nx-icon="image"></span> Mudar logo &amp; aba
+          </button>
+          <a class="button outline compact admin-return-link" href="platform.html?view=workspace">Minha operação</a>
+          <button class="button outline compact" data-admin-refresh><span data-nx-icon="activity"></span>Atualizar</button>
+          <button class="button button-primary compact" data-admin-logout>Sair</button>
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <section class="admin-page admin-overview-page is-active" id="admin-overview" data-admin-page aria-labelledby="admin-page-title">
+          <section class="admin-heading">
+            <div class="admin-heading-row">
+              <div>
+                <span class="eyebrow purple">VISÃO EXECUTIVA</span>
+                <h1 id="admin-page-title" tabindex="-1">Visão geral</h1>
+                <p>Gerencie o acesso à plataforma, acompanhe a atividade e atualize o conteúdo público.</p>
+              </div>
+              <div class="admin-export-group">
+                <button class="button outline compact" type="button" data-export-members-pdf aria-label="Exportar membros em PDF">
+                  <span data-nx-icon="fileText" aria-hidden="true"></span> Membros (PDF)
+                </button>
+                <button class="button outline compact" type="button" data-export-transactions-pdf aria-label="Exportar transações em PDF">
+                  <span data-nx-icon="fileText" aria-hidden="true"></span> Transações (PDF)
+                </button>
+              </div>
+            </div>
+          </section>
+          <p data-admin-message class="admin-message" role="status" aria-live="polite">Carregando…</p>
+          <div class="admin-dashboard-kicker">OPERAÇÃO FINANCEIRA</div>
+          <section class="admin-stats admin-finance-stats" data-admin-finance-stats aria-label="Indicadores financeiros"></section>
+          <section class="admin-chart-grid" aria-label="Gráficos da operação">
+            <article class="admin-panel admin-chart-panel">
+              <div class="admin-panel-head"><div><h2>Volume processado</h2><p>Pagamentos reais confirmados pelo adquirente.</p></div><label class="admin-chart-range">Período<select data-admin-chart-range aria-label="Período do gráfico de volume"><option value="7">7 dias</option><option value="30" selected>30 dias</option><option value="90">90 dias</option></select></label></div>
+              <div data-admin-volume-chart role="status" aria-live="polite">Carregando gráfico…</div>
+            </article>
+            <article class="admin-panel admin-chart-panel">
+              <div class="admin-panel-head"><div><h2>Pagamentos por método</h2><p>Pagamentos confirmados nos últimos 30 dias.</p></div></div>
+              <div data-admin-method-chart role="status" aria-live="polite">Carregando resumo…</div>
+            </article>
+          </section>
+          <div class="admin-dashboard-kicker admin-account-kicker">CONTAS E ACESSOS</div>
+          <section class="admin-stats" data-admin-stats aria-label="Resumo da plataforma"></section>
+          <section class="admin-overview-extra" data-admin-overview-extra aria-label="Status da operação"></section>
+        </section>
+
+        <section class="admin-panel admin-page" id="admin-accounts" data-admin-page aria-labelledby="admin-accounts-title">
+          <div class="admin-panel-head">
+            <div>
+              <h2 id="admin-accounts-title">Empresas e contas</h2>
+              <p>Consulte workspaces, abra a operação de uma empresa e ajuste adquirente, limites e permissões. Remover uma conta exclui o acesso e os dados vinculados.</p>
+            </div>
+            <div class="admin-actions-group">
+              <button class="button outline compact" type="button" data-export-members-pdf aria-label="Exportar empresas cadastradas em PDF">
+                <span data-nx-icon="fileText" aria-hidden="true"></span> Membros (PDF)
+              </button>
+              <label>Buscar empresas<input data-admin-search placeholder="Empresa, nome ou e-mail" type="search"></label>
+            </div>
+          </div>
+          <div data-admin-accounts></div><div class="nx-pager" data-account-pager></div>
+          <details class="admin-nested-section"><summary>Clientes dos workspaces <span>Clientes finais cadastrados pelos merchants</span></summary><div class="admin-panel-head"><p>Veja os clientes finais de cada workspace. Os dados financeiros dependem da integração com adquirente.</p><label>Buscar clientes<input data-admin-customer-search placeholder="Cliente, e-mail ou workspace" type="search"></label></div><div data-admin-customers></div><div class="nx-pager" data-customer-pager></div></details>
+        </section>
+        <section class="admin-panel admin-page" id="admin-kyc" data-admin-page aria-labelledby="admin-kyc-title">
+          <div class="admin-panel-head">
+            <div>
+              <h2 id="admin-kyc-title">Onboarding e KYC</h2>
+              <p>Consulte todos os cadastros, visualize os dados de clientes aprovados e analise solicitações pendentes.</p>
+            </div>
+            <div class="admin-actions-group">
+              <label>Buscar cadastros<input data-admin-kyc-search placeholder="Nome, documento ou e-mail" type="search"></label>
+              <button class="button outline compact" type="button" data-admin-kyc-refresh>Atualizar fila</button>
+            </div>
+          </div>
+          <div class="admin-account-actions" data-admin-kyc-filters style="margin-bottom:14px;gap:8px;display:flex;flex-wrap:wrap;">
+            <button type="button" class="button compact" data-kyc-tab="all">Todos (<span data-kyc-cnt-all>0</span>)</button>
+            <button type="button" class="button outline compact" data-kyc-tab="pending">Pendentes (<span data-kyc-cnt-pending>0</span>)</button>
+            <button type="button" class="button outline compact" data-kyc-tab="approved">Aprovados (<span data-kyc-cnt-approved>0</span>)</button>
+            <button type="button" class="button outline compact" data-kyc-tab="rejected">Recusados (<span data-kyc-cnt-rejected>0</span>)</button>
+          </div>
+          <div data-admin-kyc aria-live="polite" aria-busy="true">Carregando cadastros…</div>
+        </section>
+        <section class="admin-panel admin-page" id="admin-withdrawals" data-admin-page aria-labelledby="admin-withdrawals-title">
+          <div class="admin-panel-head">
+            <div>
+              <h2 id="admin-withdrawals-title">Gestão de Saques</h2>
+              <p>Fila unificada de transferências Pix solicitadas pelos lojistas no ledger. Aprove, envie Pix ou rejeite solicitações.</p>
+            </div>
+            <div class="admin-actions-group">
+              <button class="button outline compact" type="button" data-admin-payout-refresh>
+                <span data-nx-icon="refresh" aria-hidden="true"></span> Atualizar fila
+              </button>
+              <button class="button outline compact" type="button" data-export-transactions-pdf aria-label="Exportar transações em PDF">
+                <span data-nx-icon="fileText" aria-hidden="true"></span> Transações (PDF)
+              </button>
+              <span class="admin-view-badge">CONTROLE DE SAQUES</span>
+            </div>
+          </div>
+          <div data-admin-withdrawals style="display:none;" aria-hidden="true"></div>
+          <section class="admin-payout-review" aria-labelledby="admin-payout-review-title">
+            <div data-admin-payout-metrics class="receipts-summary" style="margin-bottom:16px;"></div>
+            <div data-admin-payout-tabs class="nx-view-tabs" role="tablist" aria-label="Filtro de status de saques" style="margin-bottom:16px;"></div>
+            <p class="admin-payout-notice" role="note">Transferências reais permanecem desativadas até concluir a homologação do provedor, da conta de liquidação e das autorizações operacionais. O botão de envio só será habilitado quando as chaves globais do banco e da Edge Function estiverem ligadas; cada solicitação ainda passa por validações individuais.</p>
+            <div data-admin-payout-message role="status" aria-live="polite"></div>
+            <div data-admin-payouts aria-live="polite" aria-busy="true">Carregando fila de saques…</div>
+          </section>
+        </section>
+        <!-- PÁGINA UNIFICADA: CUSTÓDIA, BLOQUEIOS E CONCILIAÇÃO -->
+        <section class="admin-panel admin-page" id="admin-custody" data-admin-page aria-labelledby="admin-custody-title">
+          <div class="admin-panel-head">
+            <div>
+              <h2 id="admin-custody-title">Custódia &amp; Conciliação</h2>
+              <p>Gestão unificada de retenções de saldo, bloqueios cautelares, reservas financeiras e conciliação bancária.</p>
+            </div>
+            <div class="admin-actions-group">
+              <button class="button button-primary compact" type="button" data-cautelar-open>
+                <span data-nx-icon="shield" aria-hidden="true"></span> Bloqueio Cautelar
+              </button>
+            </div>
+          </div>
+
+          <nav class="admin-subnav" role="tablist" aria-label="Abas de Custódia e Conciliação">
+            <button type="button" role="tab" id="tab-custody-holds" aria-selected="true" aria-controls="panel-custody-holds" data-custody-tab="holds" class="admin-subnav-btn is-active">
+              <span data-nx-icon="shield" aria-hidden="true"></span> Bloqueios e Cautelar
+            </button>
+            <button type="button" role="tab" id="tab-custody-reserves" aria-selected="false" aria-controls="panel-custody-reserves" data-custody-tab="reserves" class="admin-subnav-btn">
+              <span data-nx-icon="wallet" aria-hidden="true"></span> Reservas Financeiras
+            </button>
+            <button type="button" role="tab" id="tab-custody-reconciliation" aria-selected="false" aria-controls="panel-custody-reconciliation" data-custody-tab="reconciliation" class="admin-subnav-btn">
+              <span data-nx-icon="activity" aria-hidden="true"></span> Saldos &amp; Liquidação
+            </button>
+          </nav>
+
+          <!-- Sub-Painel 1: Bloqueios e Cautelar -->
+          <div id="panel-custody-holds" role="tabpanel" aria-labelledby="tab-custody-holds" class="admin-custody-panel is-active" data-custody-panel="holds">
+            <div class="admin-cautelar-summary-card">
+              <div class="admin-panel-head">
+                <div>
+                  <h3>Contas com Restrições Cautelares Ativas</h3>
+                  <p>Lojistas com saques, transferências Pix OUT ou movimentações de saída bloqueadas por precaução.</p>
+                </div>
+                <button class="button outline compact" type="button" data-cautelar-open>Novo bloqueio cautelar</button>
+              </div>
+              <div data-active-cautions role="region" aria-label="Resumo de bloqueios cautelares ativos">
+                Carregando restrições…
+              </div>
+            </div>
+
+            <section class="admin-nested-section" id="admin-fund-holds" aria-labelledby="admin-fund-holds-sub-title">
+              <div class="admin-panel-head">
+                <div>
+                  <h3 id="admin-fund-holds-sub-title">Bloqueio de Saldo em Conta (Ledger)</h3>
+                  <p>Bloqueie parte do saldo disponível do lojista por decisão operacional auditada. A liberação repõe o valor no saldo disponível pelo ledger.</p>
+                </div>
+                <button class="button outline compact" type="button" data-fund-holds-refresh>Atualizar histórico</button>
+              </div>
+              <p class="admin-payout-notice" role="note">Apenas saldo disponível pode ser bloqueado aqui. Valores pendentes não são liquidados por esta ação, e nenhum Pix é enviado. Para travar transferências ou saques preventivamente, use o <strong>Bloqueio Cautelar</strong> acima.</p>
+              <form class="admin-funds-hold-form" data-fund-hold-form>
+                <label>Lojista<select name="business_id" required><option value="">Carregando contas aprovadas…</option></select></label>
+                <label>Valor do saldo disponível (R$)<input name="amount" type="number" min="0.01" step="0.01" inputmode="decimal" required></label>
+                <label class="admin-funds-hold-reason">Motivo do bloqueio<textarea name="reason" minlength="10" maxlength="500" rows="3" required placeholder="Descreva a razão operacional da retenção de fundos."></textarea></label>
+                <button class="button button-primary" type="submit">Bloquear saldo</button>
+              </form>
+              <p data-fund-hold-message role="status" aria-live="polite"></p>
+              <div data-admin-fund-holds aria-live="polite" aria-busy="true">Carregando histórico de bloqueios…</div>
+            </section>
+          </div>
+
+          <!-- Sub-Painel 2: Reservas Financeiras -->
+          <div id="panel-custody-reserves" role="tabpanel" aria-labelledby="tab-custody-reserves" class="admin-custody-panel" data-custody-panel="reserves" hidden>
+            <div class="admin-panel-head">
+              <div>
+                <h3>Reservas maduras</h3>
+                <p>Consulte retenções cujo prazo venceu e libere-as para o saldo disponível. A liberação é interna ao ledger: não envia Pix nem solicita saque.</p>
+              </div>
+              <div class="admin-actions-group">
+                <button class="button outline compact" type="button" data-reserve-refresh>Atualizar fila</button>
+                <button class="button button-primary compact" type="button" data-reserve-release>Processar reservas maduras</button>
+              </div>
+            </div>
+            <p class="nx-muted">O processamento pode ser iniciado manualmente por um Super Admin com MFA ou por backend autorizado. A execução automática recorrente ainda precisa ser agendada.</p>
+            <div data-reserve-message role="status" aria-live="polite"></div>
+            <div data-matured-reserves role="status" aria-live="polite" aria-busy="true">Carregando reservas…</div>
+          </div>
+
+          <!-- Sub-Painel 3: Saldos e Liquidação do Ledger -->
+          <div id="panel-custody-reconciliation" role="tabpanel" aria-labelledby="tab-custody-reconciliation" class="admin-custody-panel" data-custody-panel="reconciliation" hidden>
+            <div class="admin-panel-head">
+              <div>
+                <h3>Saldos dos Lojistas no Ledger (Livro-Razão)</h3>
+                <p>Consulte os saldos em tempo real de cada empresa e libere valores pendentes diretamente para o Saldo Disponível com 1 clique.</p>
+              </div>
+              <button class="button outline compact" type="button" data-ledger-balances-refresh>Atualizar saldos</button>
+            </div>
+            <div data-ledger-balances-table role="region" aria-live="polite" aria-busy="true">Carregando saldos do ledger…</div>
+
+            <!-- Ferramenta opcional de conferência com extrato -->
+            <details class="admin-nested-section" style="margin-top: 24px;">
+              <summary style="cursor: pointer; font-weight: 600; padding: 10px 0; color: var(--nx-text-muted);">Auditoria comparativa com extrato externo (Opcional)</summary>
+              <div class="admin-panel-head" style="margin-top: 12px;">
+                <div>
+                  <h4>Importar extrato diário</h4>
+                  <p>Compare o relatório do adquirente com o banco da Nexora.</p>
+                </div>
+                <button class="button outline compact" type="button" data-reconciliation-refresh>Atualizar histórico</button>
+              </div>
+              <form class="admin-reconciliation-form" data-reconciliation-form>
+                <label>Adquirente<select name="provider_code" required><option value="asaas_production">Asaas · produção</option><option value="mercadopago_production">Mercado Pago · produção</option></select></label>
+                <label>Data do extrato<input type="date" name="date" required></label>
+                <button class="button button-primary" type="submit">Importar e conciliar</button>
+              </form>
+              <div data-reconciliation-message role="status" aria-live="polite"></div>
+              <div data-reconciliation-runs aria-live="polite"></div>
+              <div data-reconciliation-detail aria-live="polite"></div>
+            </details>
+          </div>
+        </section>
+
+        <!-- PÁGINA: WEBHOOKS -->
+        <section class="admin-panel admin-page" id="admin-webhooks" data-admin-page aria-labelledby="admin-webhooks-title">
+          <div class="admin-panel-head">
+            <div>
+              <h2 id="admin-webhooks-title">Webhooks &amp; Notificações</h2>
+              <p>Configure as URLs de retorno nos adquirentes e monitore entregas de eventos para lojistas.</p>
+            </div>
+            <button class="button outline compact" type="button" data-admin-webhooks-refresh>Atualizar entregas</button>
+          </div>
+
+          <section class="admin-nested-section" aria-labelledby="admin-inbound-webhooks-title">
+            <div class="admin-panel-head">
+              <div>
+                <h3 id="admin-inbound-webhooks-title">URLs de Webhook da Plataforma (Entrada)</h3>
+                <p>Copie e configure estas URLs diretamente no painel do adquirente correspondente para receber notificações de pagamentos em tempo real.</p>
+              </div>
+            </div>
+            <div class="admin-webhook-config-grid">
+              <article class="admin-webhook-config-card">
+                <div class="admin-webhook-card-head">
+                  <span class="nx-status paid">Mercado Pago</span>
+                  <small>Ambientes: Produção &amp; Sandbox</small>
+                </div>
+                <p class="admin-webhook-desc">Recebe eventos de pagamentos Pix instantâneos e atualiza o ledger com verificação segura por token.</p>
+                <div class="admin-webhook-url-group">
+                  <input id="mp-webhook-url" type="text" readonly value="https://ouqbpslyfnanajkkxrcu.supabase.co/functions/v1/nexora-webhook-mercadopago" class="admin-webhook-input">
+                  <button type="button" class="button outline compact" data-copy-url="https://ouqbpslyfnanajkkxrcu.supabase.co/functions/v1/nexora-webhook-mercadopago" aria-label="Copiar URL Webhook do Mercado Pago">
+                    <span data-nx-icon="copy" aria-hidden="true"></span> Copiar
+                  </button>
+                </div>
+                <div class="admin-webhook-hints">
+                  <strong>Tópicos no Mercado Pago:</strong> <code>payment</code> (Pagamentos)<br>
+                  <small>No Mercado Pago Developers &gt; Suas Aplicações &gt; Webhooks &gt; Modo Produção.</small>
+                </div>
+              </article>
+
+              <article class="admin-webhook-config-card">
+                <div class="admin-webhook-card-head">
+                  <span class="nx-status paid">Asaas</span>
+                  <small>Ambientes: Produção &amp; Sandbox</small>
+                </div>
+                <p class="admin-webhook-desc">Recebe confirmações de Pix IN, estornos e transferências Pix OUT com fila de redundância idempotente.</p>
+                <div class="admin-webhook-url-group">
+                  <input id="asaas-webhook-url" type="text" readonly value="https://ouqbpslyfnanajkkxrcu.supabase.co/functions/v1/nexora-webhook-asaas" class="admin-webhook-input">
+                  <button type="button" class="button outline compact" data-copy-url="https://ouqbpslyfnanajkkxrcu.supabase.co/functions/v1/nexora-webhook-asaas" aria-label="Copiar URL Webhook do Asaas">
+                    <span data-nx-icon="copy" aria-hidden="true"></span> Copiar
+                  </button>
+                </div>
+                <div class="admin-webhook-hints">
+                  <strong>Eventos no Asaas:</strong> <code>PAYMENT_RECEIVED</code>, <code>PAYMENT_CONFIRMED</code>, <code>TRANSFER_COMPLETED</code>, <code>TRANSFER_FAILED</code><br>
+                  <small>No Asaas &gt; Minha Conta &gt; Integração &gt; Webhooks para Cobranças e Transferências.</small>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section class="admin-nested-section" aria-labelledby="admin-outbound-webhooks-title">
+            <div class="admin-panel-head">
+              <div>
+                <h3 id="admin-outbound-webhooks-title">Webhooks para Lojistas (Saída)</h3>
+                <p>Acompanhe entregas, respostas HTTP e tentativas. Reenvios exigem motivo e ficam no histórico administrativo.</p>
+              </div>
+            </div>
+            <div data-admin-webhooks role="status" aria-live="polite" aria-busy="true">Carregando entregas…</div>
+          </section>
+        </section>
+
+        <!-- PÁGINA: ADQUIRENTES E CONEXÕES -->
+        <section class="admin-panel admin-page" id="admin-acquirers" data-admin-page aria-labelledby="admin-acquirers-title">
+          <div class="admin-panel-head">
+            <div>
+              <h2 id="admin-acquirers-title">Adquirentes e conexões</h2>
+              <p>Cadastre provedores e veja qual cada merchant selecionou. Segredos nunca são exibidos neste painel.</p>
+            </div>
+            <button class="button button-primary compact" type="button" data-acquirer-new>Cadastrar adquirente</button>
+          </div>
+
+          <!-- Saúde dos conectores: widget compacto e informativo -->
+          <div class="provider-health-compact" aria-labelledby="admin-provider-health-title">
+            <div class="provider-health-compact-head">
+              <span class="provider-health-badge-label">
+                <span data-nx-icon="activity" aria-hidden="true"></span>
+                <strong id="admin-provider-health-title">Saúde dos conectores:</strong>
+              </span>
+              <div data-provider-health-badges class="provider-health-badges" role="status" aria-live="polite">
+                Carregando status dos conectores…
+              </div>
+              <button class="button outline compact" type="button" data-provider-health-check aria-label="Verificar saúde dos conectores agora">
+                Verificar conectores
+              </button>
+            </div>
+            <details class="provider-health-details">
+              <summary>Ver relatório detalhado de latência e conectores</summary>
+              <div data-provider-health role="status" aria-live="polite">Carregando última verificação…</div>
+            </details>
+          </div>
+
+          <div data-admin-acquirers role="status">Carregando adquirentes…</div>
+
+          <section class="admin-nested-section" aria-labelledby="admin-connections-title">
+            <div class="admin-panel-head">
+              <div>
+                <h3 id="admin-connections-title">Conexões de Adquirente por Cliente</h3>
+                <p id="admin-connections-desc">Veja qual adquirente está atribuído a cada merchant e o status da rota. Você pode alterar o adquirente de qualquer cliente diretamente aqui ou na aba Empresas.</p>
+              </div>
+              <div class="admin-connections-search-wrap">
+                <label for="admin-connection-search-input">Buscar conexões</label>
+                <input id="admin-connection-search-input" data-admin-connection-search placeholder="Merchant, e-mail ou adquirente" type="search" aria-label="Buscar conexões por cliente" aria-describedby="admin-connections-desc">
+              </div>
+            </div>
+            <div data-admin-connection-feedback class="sr-only" role="status" aria-live="polite"></div>
+            <div data-admin-provider-connections role="region" aria-label="Tabela de conexões de adquirente por cliente" aria-live="polite"></div>
+          </section>
+        </section>
+
+        <!-- PÁGINA: ALERTAS DE LIMITE -->
+        <section class="admin-panel admin-page" id="admin-alerts" data-admin-page aria-labelledby="admin-alerts-title">
+          <div class="admin-panel-head"><div><h2 id="admin-alerts-title">Alertas de limite</h2><p>Notificações geradas quando uma solicitação ultrapassa os parâmetros do merchant.</p></div><button class="button outline compact" type="button" data-admin-alerts-refresh>Atualizar alertas</button></div>
+          <div data-admin-alerts role="status">Carregando alertas…</div>
+        </section>
+
+        <!-- PÁGINA: SITE E APARÊNCIA -->
+        <section class="admin-panel admin-page" id="admin-site" data-admin-page aria-labelledby="admin-site-title">
+          <div class="admin-panel-head"><div><h2 id="admin-site-title">Site e aparência</h2><p>Valores de taxas precisam ser aprovados pela IP. Nunca informe credenciais de integração aqui.</p></div></div>
+          <form data-admin-site></form>
+        </section>
+
+        <!-- RELATÓRIO DE IMPRESSÃO / PDF -->
+        <div id="nx-print-report" aria-hidden="true"></div>
+      </div>
+    </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-client.js"></script>
+  <script src="nexora-core.js"></script>
+  <script src="nexora-ui.js"></script>
+  <script src="nexora-api.js"></script>
+  <script src="nexora-icons.js"></script>
+  <script src="theme-toggle.js"></script>
+  <script src="recent-access.js"></script>
+  <script src="site-settings.js"></script>
+  <script src="nexora-admin-menu.js"></script>
+  <script src="nexora-admin.js"></script>
+</body>
+</html>

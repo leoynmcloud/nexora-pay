@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="pt-BR" class="theme-light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Nexora Pay — Gateway de pagamentos inteligente com Pix instantâneo, cartão de alta aprovação, roteamento entre adquirentes e conciliação em tempo real." />
+  <title>Nexora Pay — Gateway de Pagamentos para Negócios Digitais</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="apple-touch-icon" href="nexora-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="recent-access.css" />
+  <link rel="stylesheet" href="enhancements.css" />
+  <link rel="stylesheet" href="scroll-animations.css" />
+  <link rel="stylesheet" href="liquid-buttons.css" />
+  <link rel="stylesheet" href="rotate-text.css" />
+  <link rel="stylesheet" href="wide-layout.css" />
+  <link rel="stylesheet" href="mobile.css" />
+  <link rel="stylesheet" href="mobile-overrides.css" />
+  <link rel="stylesheet" href="nexora-app.css" />
+  <link rel="stylesheet" href="landing-additions.css" />
+  <link rel="stylesheet" href="site-premium.css" />
+  <link rel="stylesheet" href="mobile-final.css" />
+  <link rel="stylesheet" href="theme-fixes.css" />
+</head>
+<body>
+  <div class="noise"></div>
+
+  <!-- NAVEGAÇÃO SUPERIOR -->
+  <nav class="nav shell">
+    <a class="brand" href="#inicio"><img class="brand-logo-img" src="logo-nexora-purple.svg" alt="Nexora Pay" /></a>
+    <div class="nav-links">
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#recursos">Recursos</a>
+      <a href="#integracao">Integração</a>
+      <a href="#taxas">Taxas</a>
+      <a href="#seguranca">Segurança</a>
+      <a href="#faq">FAQ</a>
+      <section class="recent-access" id="site-desktop-recent" aria-label="Acessado recentemente" hidden>
+        <small>Acessado recentemente</small>
+        <div data-recent-links></div>
+      </section>
+    </div>
+    <div class="nav-auth">
+      <a class="nav-login" href="auth.html">Entrar</a>
+      <button type="button" class="btn-presentation compact" data-open-lead-modal style="padding:8px 16px;font-size:13px;">Falar com consultor</button>
+      <a class="nav-login nav-signup" href="auth.html?mode=signup">Criar conta</a>
+    </div>
+    <button class="mobile-menu-toggle" aria-label="Abrir menu" aria-expanded="false"><span data-nx-icon="menu"></span></button>
+    <dialog class="mobile-menu" id="mobile-navigation" aria-label="Menu de navegação">
+      <div class="mobile-menu-head">
+        <a class="brand" href="#inicio"><img class="brand-logo-img" src="logo-nexora-purple.svg" alt="Nexora Pay" /></a>
+        <button class="mobile-menu-close" aria-label="Fechar menu"><span data-nx-icon="close"></span></button>
+      </div>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#recursos">Recursos</a>
+      <a href="#integracao">Integração</a>
+      <a href="#taxas">Taxas</a>
+      <a href="#seguranca">Segurança</a>
+      <a href="#faq">FAQ</a>
+      <button type="button" class="btn-presentation" data-open-lead-modal style="width:100%;margin-top:16px;">Solicitar uma apresentação</button>
+      <a class="mobile-menu-cta" href="auth.html?mode=signup">Criar conta grátis</a>
+      <a class="mobile-menu-login" href="auth.html">Entrar na plataforma</a>
+    </dialog>
+  </nav>
+
+  <main id="inicio">
+      <!-- HERO SECTION COM VÍDEO DA TERRA SEM FUNDO -->
+    <section class="hero shell">
+        <!-- O vídeo contém somente o globo, com transparência real. -->
+      <div class="hero-globe-wrap" aria-hidden="true">
+        <video id="hero-earth-video" class="hero-earth-video" muted loop playsinline preload="none" tabindex="-1">
+          <source src="earth-rotating-alpha.webm" type="video/webm">
+        </video>
+        <svg class="hero-service-connectors" viewBox="0 0 800 800" preserveAspectRatio="none">
+          <path class="hero-service-line line-checkout" d="M 505 210 C 555 210 520 155 550 155" />
+          <path class="hero-service-line line-links" d="M 570 355 C 620 355 520 300 550 300" />
+          <path class="hero-service-line line-pix" d="M 575 500 C 625 500 520 445 550 445" />
+          <path class="hero-service-line line-integrations" d="M 525 640 C 575 640 520 590 550 590" />
+          <circle class="hero-service-node node-checkout" cx="505" cy="210" r="4" />
+          <circle class="hero-service-node node-links" cx="570" cy="355" r="4" />
+          <circle class="hero-service-node node-pix" cx="575" cy="500" r="4" />
+          <circle class="hero-service-node node-integrations" cx="525" cy="640" r="4" />
+        </svg>
+        <div class="hero-service-callout callout-checkout">
+          <span>Checkout</span><small>Pagamento integrado</small>
+        </div>
+        <div class="hero-service-callout callout-links">
+          <span>Links de pagamento</span><small>Compartilhe e receba</small>
+        </div>
+        <div class="hero-service-callout callout-pix">
+          <span>Pix</span><small>Cobranças para seus clientes</small>
+        </div>
+        <div class="hero-service-callout callout-integrations">
+          <span>Integrações</span><small>Conecte seus provedores</small>
+        </div>
+      </div>
+
+      <div class="hero-copy">
+        <div class="hero-eyebrow">
+          <span class="pulse-dot"></span>
+          Gateway de Pagamentos Inteligente
+        </div>
+        <h1>
+          <span>Infraestrutura de pagamentos</span><br />
+          <em data-rotate-text>feita para o seu negócio escalar.</em>
+        </h1>
+        <p class="hero-subtitle">
+          Processe Pix e Cartão com máxima taxa de aprovação, roteamento inteligente entre adquirentes, checkout transparente de alta conversão e conciliação financeira em tempo real.
+        </p>
+
+        <div class="hero-actions-group">
+          <button type="button" class="btn-presentation" data-open-lead-modal>
+            Solicitar uma apresentação <span>→</span>
+          </button>
+          <a class="btn-signup-subtle" href="auth.html?mode=signup">
+            Criar conta grátis
+          </a>
+        </div>
+
+        <div class="hero-trust-row">
+          <div class="hero-trust-item">
+            <span class="trust-icon">✓</span> 99.98% Uptime operacional
+          </div>
+          <div class="hero-trust-item">
+            <span class="trust-icon">✓</span> Pix a partir de R$ 0,50
+          </div>
+          <div class="hero-trust-item">
+            <span class="trust-icon">✓</span> Antifraude com IA preditiva
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- SEGMENTOS ATENDIDOS -->
+    <section class="segments-section shell">
+      <div class="segments-header">
+        <span class="hero-eyebrow" style="margin-bottom:12px;">Para quem é a Nexora</span>
+        <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,2.8vw,42px);font-weight:700;letter-spacing:-0.03em;color:var(--nx-text);margin-bottom:12px;">
+          Desenhado para operações que não podem perder vendas
+        </h2>
+        <p style="color:var(--nx-muted);font-size:15px;line-height:1.6;">
+          Seja você um e-commerce em expansão, um infoprodutor com picos de tráfego ou uma plataforma SaaS, nossa infraestrutura acompanha seu crescimento.
+        </p>
+      </div>
+
+      <div class="segments-grid">
+        <article class="segment-card">
+          <div class="segment-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          </div>
+          <h3>E-commerce & Varejo</h3>
+          <p>Checkout transparente sem redirecionamento, antifraude de alta acurácia e máxima taxa de aprovação para elevar sua taxa de conversão final.</p>
+        </article>
+        <article class="segment-card">
+          <div class="segment-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 9v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+          </div>
+          <h3>Infoprodutos & Lançamentos</h3>
+          <p>Estrutura pronta para aguentar picos extremos de acessos e vendas no mesmo minuto, com Pix imediato e parcelamento no cartão em até 12x.</p>
+        </article>
+        <article class="segment-card">
+          <div class="segment-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>
+          </div>
+          <h3>SaaS & Assinaturas</h3>
+          <p>Cobranças automatizadas, API moderna para desenvolvedores e conciliação em tempo real para simplificar a gestão financeira da sua aplicação.</p>
+        </article>
+        <article class="segment-card">
+          <div class="segment-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          </div>
+          <h3>Serviços & Negócios B2B</h3>
+          <p>Gere links de pagamento profissionais em segundos, acompanhe o pagamento dos seus clientes e solicite saques Pix direto para a sua conta.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- COMO FUNCIONA O GATEWAY: FLUXO PASSO A PASSO -->
+    <section class="how-it-works-section" id="como-funciona">
+      <div class="shell">
+        <div class="section-head-clean">
+          <span class="hero-eyebrow">Fluxo de Operação</span>
+          <h2>Como funciona o gateway Nexora Pay</h2>
+          <p>Do clique do cliente ao saldo disponível na sua conta, cada etapa foi desenhada para ser rápida, transparente e segura.</p>
+        </div>
+
+        <div class="steps-flow-grid">
+          <article class="step-card">
+            <span class="step-number">01</span>
+            <h3>Criação da Cobrança</h3>
+            <p>Seu sistema ou você cria a cobrança via API RESTful ou gera um Link de Pagamento direto no painel com valor, método e dados do comprador.</p>
+          </article>
+          <article class="step-card">
+            <span class="step-number">02</span>
+            <h3>Checkout & Antifraude</h3>
+            <p>O cliente finaliza via Pix com QR Code dinâmico ou Cartão de Crédito. A transação passa por roteamento inteligente e checagem antifraude.</p>
+          </article>
+          <article class="step-card">
+            <span class="step-number">03</span>
+            <h3>Confirmação em Milissegundos</h3>
+            <p>O pagamento é confirmado instantaneamente. Disparamos um webhook seguro para o seu servidor e atualizamos a tela do checkout em tempo real.</p>
+          </article>
+          <article class="step-card">
+            <span class="step-number">04</span>
+            <h3>Conciliação & Saque Pix</h3>
+            <p>O valor líquido entra no seu ledger com todas as tarifas discriminadas. Solicite saques a qualquer momento para a conta bancária da sua empresa.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- NÚCLEO NEXORA: BENEFÍCIOS REAIS -->
+    <section class="core-features-section" id="recursos">
+      <div class="shell">
+        <div class="section-head-clean">
+          <span class="hero-eyebrow">Núcleo Nexora</span>
+          <h2>Tecnologia focada em aumentar sua receita</h2>
+          <p>Menos fricção operacional, zero intermediários desnecessários e ferramentas pensadas para impulsionar seu lucro.</p>
+        </div>
+
+        <div class="core-features-grid">
+          <article class="core-card">
+            <div class="core-icon-wrap">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><path d="M6 9v3a3 3 0 0 0 3 3h6"/><path d="M18 9v3"/></svg>
+            </div>
+            <h3>Roteamento Inteligente</h3>
+            <p>Conexão ativa com adquirentes homologados. Se um provedor apresentar instabilidade, o tráfego é direcionado para a rota mais estável, evitando vendas perdidas.</p>
+          </article>
+
+          <article class="core-card">
+            <div class="core-icon-wrap">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+            </div>
+            <h3>Checkout Transparente Mobile</h3>
+            <p>Desenvolvido com foco absoluto em dispositivos móveis. Carregamento instantâneo, sem necessidade do comprador criar conta e com cópia de Pix em 1 clique.</p>
+          </article>
+
+          <article class="core-card">
+            <div class="core-icon-wrap">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg>
+            </div>
+            <h3>Ledger Financeiro em Tempo Real</h3>
+            <p>Rastreabilidade centavo a centavo. Saiba exatamente o que foi recebido, o que está para liberar e os custos por transação sem surpresas no extrato.</p>
+          </article>
+
+          <article class="core-card">
+            <div class="core-icon-wrap">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            </div>
+            <h3>Motor Antifraude Avançado</h3>
+            <p>Análise de risco em camadas para barrar fraudes e contestações antes que elas aconteçam, sem prejudicar a aprovação de clientes legítimos.</p>
+          </article>
+
+          <article class="core-card">
+            <div class="core-icon-wrap">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <h3>Webhooks & API de Alta Velocidade</h3>
+            <p>Arquitetura moderna com respostas em menos de 200ms. Payloads padronizados, assinaturas criptográficas HMAC-SHA256 e alta confiabilidade de entrega.</p>
+          </article>
+
+          <article class="core-card">
+            <div class="core-icon-wrap">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <h3>Gestão Automatizada de Saques</h3>
+            <p>Transfira seu saldo disponível direto para a conta bancária da sua empresa via Pix com velocidade e controle rigoroso de conciliação.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTEGRAÇÃO & IMPLANTAÇÃO -->
+    <section class="integration-section shell" id="integracao">
+      <div class="integration-layout">
+        <div class="integration-copy">
+          <span class="hero-eyebrow">Implementação guiada</span>
+          <h2 class="integration-title">
+            Da configuração à primeira cobrança, com clareza em cada etapa.
+          </h2>
+          <p class="integration-lede">
+            Comece pelo painel ou prepare a conexão da sua aplicação. Acompanhe cada etapa sem misturar cadastro, integração e operação.
+          </p>
+
+          <div class="implementation-steps" aria-label="Etapas para começar com a Nexora">
+            <div class="implementation-step">
+              <span class="implementation-number">01</span>
+              <div>
+                <small class="implementation-label">ACESSO</small>
+                <strong>Prepare sua operação</strong>
+                <small class="implementation-description">Complete os dados da empresa e acompanhe a análise da conta.</small>
+              </div>
+            </div>
+            <div class="implementation-step">
+              <span class="implementation-number">02</span>
+              <div>
+                <small class="implementation-label">COBRANÇA</small>
+                <strong>Escolha como integrar</strong>
+                <small class="implementation-description">Crie links pelo painel ou prepare uma integração de servidor com a API.</small>
+              </div>
+            </div>
+            <div class="implementation-step">
+              <span class="implementation-number">03</span>
+              <div>
+                <small class="implementation-label">ACOMPANHAMENTO</small>
+                <strong>Valide o fluxo de ponta a ponta</strong>
+                <small class="implementation-description">Confira o status da cobrança e configure notificações para a sua operação.</small>
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="btn-presentation" data-open-lead-modal>
+            Conversar com a equipe <span>→</span>
+          </button>
+        </div>
+
+        <div class="integration-preview">
+        <div class="code-mockup">
+          <div class="code-header">
+            <div class="code-dots"><i></i><i></i><i></i></div>
+            <div class="code-window-label"><small>PRÉVIA TÉCNICA</small><span>Criação de link de pagamento</span></div>
+            <span class="code-format-badge">JSON</span>
+          </div>
+          <div class="code-endpoint"><span>POST</span> /api/v1/payment-links</div>
+          <pre class="code-body" aria-label="Exemplo ilustrativo de requisição à API"><code><span class="code-comment">// Execute no servidor; nunca exponha a chave no navegador.</span>
+<span class="code-keyword">const</span> response = <span class="code-keyword">await</span> fetch(
+  <span class="code-string">"https://www.nexorapay.me/api/v1/payment-links"</span>, {
+    method: <span class="code-string">"POST"</span>,
+    headers: {
+      <span class="code-prop">Authorization</span>: <span class="code-string">`Bearer ${process.env.NEXORA_API_KEY}`</span>,
+      <span class="code-prop">apikey</span>: process.env.NEXORA_SUPABASE_ANON_KEY,
+      <span class="code-prop">Idempotency-Key</span>: <span class="code-string">"loja-pedido-2026-000042"</span>,
+      <span class="code-prop">"Content-Type"</span>: <span class="code-string">"application/json"</span>
+    },
+    body: JSON.stringify({
+      <span class="code-prop">amount_cents</span>: <span class="code-number">15000</span>,
+      <span class="code-prop">currency</span>: <span class="code-string">"BRL"</span>,
+      <span class="code-prop">description</span>: <span class="code-string">"Pedido 42"</span>
+    })
+  }
+);</code></pre>
+          <div class="code-footer"><span><i></i> Chave mantida no servidor</span><span>Exemplo ilustrativo · API v1 em homologação</span></div>
+        </div>
+        <div class="integration-note"><span aria-hidden="true">↗</span><p><strong>Um fluxo, duas formas de começar</strong><br>Use o painel sem código ou prepare a integração técnica com acompanhamento.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAXAS E CONDIÇÕES TRANSPARENTES -->
+    <section class="pricing-section shell" id="taxas">
+      <div class="section-head-clean">
+        <span class="hero-eyebrow">Condições Comerciais</span>
+        <h2>Transparência total nos seus custos</h2>
+        <p>Sem pegadinhas, sem taxas escondidas. Você só paga quando aprovar vendas.</p>
+      </div>
+
+      <div class="pricing-clarity-banner">
+        <strong>O que significa R$ 0,00 de mensalidade e Pix até R$ 0,50?</strong>
+        <p>Você não paga adesão, não tem custo fixo mensal e não fica preso a mensalidades mínimas. Sua operação aproveita taxas ultra-competitivas de até R$ 0,50 por transação Pix, pagando exclusivamente pelo volume que você aprova com sucesso.</p>
+      </div>
+
+      <div class="pricing-grid">
+        <article class="price-card">
+          <small>RECEBIMENTOS PIX</small>
+          <h3>Pix Instantâneo</h3>
+          <div class="price-amount">Até R$ 0,50 <span>/ transação</span></div>
+          <p>A taxa de Pix mais agressiva e transparente do mercado para operações que buscam margem máxima.</p>
+          <ul class="price-features">
+            <li><i>✓</i> Tarifas decrescentes de até R$ 0,50 por Pix aprovado</li>
+            <li><i>✓</i> Confirmação imediata em 1.2 segundos via SPI</li>
+            <li><i>✓</i> QR Code dinâmico com expiração segura</li>
+            <li><i>✓</i> Conciliação automática no ledger em tempo real</li>
+            <li><i>✓</i> Zero tarifa para Pix gerado e não pago</li>
+          </ul>
+          <a class="btn-signup-subtle" style="text-align:center;justify-content:center;" href="auth.html?mode=signup">Começar com Pix</a>
+        </article>
+
+        <article class="price-card featured">
+          <span class="price-badge">Mais Escolhido</span>
+          <small>CARTÃO DE CRÉDITO</small>
+          <h3>Cartão de Crédito</h3>
+          <div class="price-amount">3.99% <span>+ R$ 0,49</span></div>
+          <p>Venda à vista ou parcelado em até 12x com roteamento multi-adquirente e antifraude incluso.</p>
+          <ul class="price-features">
+            <li><i>✓</i> Parcelamento flexível em até 12x</li>
+            <li><i>✓</i> Tokenização segura padrão PCI-DSS</li>
+            <li><i>✓</i> Motor antifraude em múltiplas camadas</li>
+            <li><i>✓</i> Máxima taxa de aprovação nas bandeiras</li>
+          </ul>
+          <button type="button" class="btn-presentation" data-open-lead-modal style="width:100%;justify-content:center;">Solicitar Proposta</button>
+        </article>
+
+        <article class="price-card">
+          <small>GRANDES OPERAÇÕES</small>
+          <h3>Plano Customizado</h3>
+          <div class="price-amount">Sob Medida</div>
+          <p>Para empresas que faturam acima de R$ 100.000/mês e necessitam de taxas negociadas e suporte prioritário.</p>
+          <ul class="price-features">
+            <li><i>✓</i> Taxas decrescentes por volume</li>
+            <li><i>✓</i> Gerente de contas dedicado</li>
+            <li><i>✓</i> Roteamento customizado de adquirentes</li>
+            <li><i>✓</i> SLA técnico prioritário 24/7</li>
+          </ul>
+          <button type="button" class="btn-signup-subtle" data-open-lead-modal style="text-align:center;justify-content:center;">Falar com Especialista</button>
+        </article>
+      </div>
+    </section>
+
+    <!-- SEGURANÇA & CONFIANÇA INSTITUCIONAL -->
+    <section class="security-section-new" id="seguranca">
+      <div class="shell">
+        <div class="section-head-clean">
+          <span class="hero-eyebrow">Segurança & Compliance Institucional</span>
+          <h2>Infraestrutura blindada com padrão bancário de proteção</h2>
+          <p>Isolamento criptográfico em HSM, tokenização em conformidade com PCI-DSS Nível 1 e inteligência artificial preditiva para proteger cada centavo da sua operação.</p>
+        </div>
+
+        <div class="security-grid-new">
+          <div class="sec-box">
+            <div class="sec-icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1.5"/></svg>
+            </div>
+            <h3>Criptografia HSM & TLS 1.3 Ponta a Ponta</h3>
+            <p>Tráfego 100% cifrado sob protocolo TLS 1.3 com cifras elípticas avançadas. Chaves e credenciais bancárias armazenadas em Hardware Security Module (KMS/HSM) com segregação criptográfica estrita por tenant.</p>
+          </div>
+
+          <div class="sec-box">
+            <div class="sec-icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            </div>
+            <h3>Tokenização Segura Padrão PCI-DSS Nível 1</h3>
+            <p>Dados de cartão são convertidos instantaneamente em tokens de uso restrito antes de tocarem qualquer infraestrutura, anulando passivos de vazamento e atendendo aos mais rigorosos padrões da Visa e Mastercard.</p>
+          </div>
+
+          <div class="sec-box">
+            <div class="sec-icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </div>
+            <h3>Liquidação SPI/DICT no Banco Central</h3>
+            <p>Conexão homologada com o Sistema de Pagamentos Instantâneos (SPI) e Diretório DICT. Custódia segregada em instituições reguladas e autorizadas pelo BACEN, garantindo liquidação atômica e conciliação precisa.</p>
+          </div>
+
+          <div class="sec-box">
+            <div class="sec-icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>
+            </div>
+            <h3>Blindagem MFA, TOTP & Webhooks Assinados</h3>
+            <p>Autenticação multifator obrigatória para saques e ações críticas de custódia. Webhooks assinados criptograficamente via HMAC-SHA256 para imunizar sua aplicação contra ataques de replay e adulteração.</p>
+          </div>
+        </div>
+
+        <div class="security-badges-bar">
+          <div class="sec-badge-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>PCI-DSS Level 1 Compliant</span>
+          </div>
+          <div class="sec-badge-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>Criptografia AES-256-GCM</span>
+          </div>
+          <div class="sec-badge-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>Protocolo SPI / DICT BACEN</span>
+          </div>
+          <div class="sec-badge-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>Assinatura HMAC-SHA256</span>
+          </div>
+          <div class="sec-badge-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>SLA 99.98% de Uptime</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PERGUNTAS FREQUENTES (FAQ ADQUIRENTE & GATEWAY) -->
+    <section class="faq-section shell" id="faq">
+      <div class="section-head-clean">
+        <span class="hero-eyebrow">Dúvidas Frequentes</span>
+        <h2>Perguntas frequentes sobre o gateway e adquirentes</h2>
+        <p>Entenda como a Nexora Pay conecta sua operação às maiores adquirentes do mercado, garante máxima taxa de aprovação e simplifica sua gestão financeira.</p>
+      </div>
+
+      <div class="faq-accordion-wrap">
+        <details class="faq-item" open>
+          <summary class="faq-question">
+            <span>A Nexora Pay é uma adquirente ou um gateway multi-adquirente?</span>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>A Nexora Pay opera como uma infraestrutura inteligente de pagamentos (gateway e orquestrador). Conectamos sua operação diretamente às maiores adquirentes homologadas do Brasil (como Cielo, Rede, Stone, Getnet e adquirentes digitais) e ao Banco Central (SPI/DICT para Pix). Realizamos o roteamento inteligente com a melhor rota técnica e menor custo, sem que você precise fechar múltiplos contratos bancários por conta própria.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>Como funciona o roteamento inteligente entre adquirentes?</span>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>Caso uma adquirente parceira apresente instabilidade técnica, recusa por timeout ou oscilação temporária de rede, o motor inteligente da Nexora redireciona a tentativa de pagamento automaticamente para uma rota secundária em menos de 100ms. Esse mecanismo recupera vendas legítimas que seriam perdidas e eleva a taxa de aprovação para até 98.4%.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>Posso utilizar minhas próprias afiliações ou usar a estrutura da Nexora?</span>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>Ambos os modelos são plenamente atendidos. Você pode começar a vender hoje mesmo utilizando a afiliação compartilhada da Nexora de alta reputação bancária com liquidação pronta (sem burocracia de credenciamento). Se sua empresa já possui taxas negociadas e contrato próprio em adquirentes específicas, podemos conectar suas credenciais diretamente ao nosso orquestrador.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>Como funciona a taxa de Pix de até R$ 0,50 e quando o saldo cai na conta?</span>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>Nossas transações Pix são processadas diretamente no Sistema de Pagamentos Instantâneos (SPI) do Banco Central com confirmação em 1.2 segundos. As tarifas são decrescentes conforme o volume transacionado, chegando a até R$ 0,50 por venda aprovada. Não há taxa de adesão, R$ 0,00 de mensalidade fixa e Pix gerado e não pago é 100% gratuito. O saldo liberado fica disponível em tempo real no seu ledger.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>Minha empresa precisa de certificação PCI-DSS própria para vender no cartão?</span>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>Não. Todo o fluxo de cartão de crédito utiliza nosso Checkout Transparente com tokenização segura em conformidade com o padrão PCI-DSS Nível 1. Os dados sensíveis do cartão são convertidos em tokens criptográficos diretamente no navegador do cliente antes de trafegarem, isentando sua empresa de auditorias onerosas de conformidade.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>Como o motor antifraude com IA protege contra chargebacks?</span>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>Nosso algoritmo avalia em milissegundos mais de 200 variáveis por transação — device fingerprinting, geolocalização, reputação de IP, velocidade de compra e histórico comportamental. Isso bloqueia tentativas fraudulentas e testes de cartão antes de enviar a cobrança ao adquirente, mantendo sua taxa de chargeback em níveis seguros (&lt; 0.15%) sem derrubar clientes reais.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>Como funcionam os saques e a conciliação bancária?</span>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>Cada venda é registrada centavo a centavo no Ledger Financeiro da plataforma. Você pode solicitar transferências via Pix direto para a conta bancária vinculada ao CNPJ da sua empresa a qualquer momento pelo painel. A conciliação é 100% automatizada com extrato consolidado para contabilidade e fechamento fiscal.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">
+            <span>Qual é o prazo para começar a operar e integrar a API?</span>
+            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="faq-answer">
+            <p>A criação de conta e acesso ao ambiente de testes (sandbox) são imediatos. A integração via API REST padronizada com webhooks assinados (HMAC-SHA256) pode ser realizada em poucas horas por desenvolvedores. Para links de pagamento no checkout transparente, você pode começar a receber vendas no mesmo dia após envio da documentação básica da sua empresa.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <!-- RODAPÉ PROFISSIONAL -->
+  <footer class="footer-pro">
+    <div class="shell">
+      <div class="footer-pro-grid">
+        <div class="footer-company">
+          <img class="brand-logo-img" src="logo-nexora-purple.svg" alt="Nexora Pay" style="width:145px;margin-bottom:12px;" />
+          <p>
+            Nexora Pay Tecnologia em Pagamentos.<br />
+            Infraestrutura moderna e inteligente para orquestração, processamento e gestão financeira de pagamentos digitais.
+          </p>
+          <div style="margin-top:16px;">
+            <a href="mailto:contato@nexorapay.me" style="color:var(--nx-purple-light);text-decoration:none;font-size:13px;font-weight:600;">contato@nexorapay.me</a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Plataforma</h4>
+          <ul>
+            <li><a href="#como-funciona">Como funciona</a></li>
+            <li><a href="#recursos">Recursos</a></li>
+            <li><a href="#taxas">Taxas e custos</a></li>
+            <li><a href="#integracao">Integração API</a></li>
+            <li><a href="#faq">Perguntas Frequentes (FAQ)</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Acesso</h4>
+          <ul>
+            <li><a href="auth.html">Entrar no Painel</a></li>
+            <li><a href="auth.html?mode=signup">Criar Conta Grátis</a></li>
+            <li><a href="#" data-open-lead-modal>Solicitar Apresentação</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Legal & Privacidade</h4>
+          <ul>
+            <li><a href="termos.html">Termos de Uso</a></li>
+            <li><a href="privacidade.html">Política de Privacidade (LGPD)</a></li>
+            <li><button type="button" data-cookie-settings style="background:none;border:0;color:var(--nx-muted);cursor:pointer;padding:0;font-size:13px;">Preferências de Cookies</button></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-legal-notice">
+        <span>© 2026 Nexora Pay Tecnologia em Pagamentos. Todos os direitos reservados.</span>
+        <span>A Nexora atua como plataforma tecnológica de gateway. As liquidações financeiras são efetuadas por instituições de pagamento parceiras autorizadas pelo Banco Central do Brasil.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL DE CAPTAÇÃO / APRESENTAÇÃO COMERCIAL -->
+  <dialog class="lead-modal" id="lead-modal" aria-labelledby="lead-modal-title">
+    <div class="lead-modal-card">
+      <button type="button" class="lead-modal-close" data-close-lead-modal aria-label="Fechar modal">✕</button>
+
+      <form id="lead-form">
+        <h2 id="lead-modal-title">Solicitar Apresentação</h2>
+        <p>Preencha os dados abaixo para um de nossos especialistas em pagamentos entrar em contato com você.</p>
+
+        <div class="lead-field">
+          <label for="lead-name">Nome completo *</label>
+          <input id="lead-name" name="name" type="text" required placeholder="Ex: Roberto Gomes" autocomplete="name" />
+        </div>
+
+        <div class="lead-field">
+          <label for="lead-email">E-mail corporativo *</label>
+          <input id="lead-email" name="email" type="email" required placeholder="roberto@suaempresa.com" autocomplete="email" />
+        </div>
+
+        <div class="lead-field">
+          <label for="lead-phone">WhatsApp com DDD *</label>
+          <input id="lead-phone" name="phone" type="tel" required placeholder="(11) 99999-9999" autocomplete="tel" />
+        </div>
+
+        <div class="lead-field">
+          <label for="lead-volume">Volume mensal estimado *</label>
+          <select id="lead-volume" name="volume" required>
+            <option value="Iniciando agora">Iniciando agora (Até R$ 20.000/mês)</option>
+            <option value="R$ 20.000 a R$ 100.000">R$ 20.000 a R$ 100.000/mês</option>
+            <option value="Acima de R$ 100.000">Acima de R$ 100.000/mês (Taxas especiais)</option>
+          </select>
+        </div>
+
+        <div class="lead-modal-actions">
+          <button type="submit" class="btn-lead-submit">Enviar solicitação</button>
+          <button type="submit" class="btn-lead-whatsapp" data-action="whatsapp">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Falar via WhatsApp agora
+          </button>
+        </div>
+      </form>
+
+      <div data-lead-success style="display:none;text-align:center;padding:24px 0;">
+        <div style="width:64px;height:64px;border-radius:50%;background:rgba(52,211,153,0.15);border:1px solid rgba(52,211,153,0.3);color:#34d399;display:inline-grid;place-items:center;margin-bottom:16px;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <h3 style="font-family:'Space Grotesk',sans-serif;font-size:22px;color:var(--nx-text);margin-bottom:8px;">Solicitação Recebida!</h3>
+        <p style="color:var(--nx-muted);font-size:14px;line-height:1.6;margin-bottom:20px;">
+          Nossa equipe comercial entrará em contato em breve pelo WhatsApp ou e-mail informado.
+        </p>
+        <button type="button" class="btn-signup-subtle" data-close-lead-modal style="margin:0 auto;">Fechar</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-client.js"></script>
+  <script src="nexora-core.js"></script>
+  <script src="nexora-ui.js"></script>
+  <script src="site-settings.js"></script>
+  <script src="cookies.js"></script>
+  <script src="enhancements.js"></script>
+  <script src="nexora-icons.js"></script>
+  <script src="theme-toggle.js"></script>
+  <script src="recent-access.js"></script>
+  <script src="scroll-animations.js"></script>
+  <script src="rotate-text.js"></script>
+  <script src="mobile-menu.js"></script>
+  <script src="hero-globe.js"></script>
+  <script src="lead-modal.js"></script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+[functions.nexora-email-events]
+verify_jwt = false
+
+[functions.nexora-provider-config]
+verify_jwt = true
+
+[functions.nexora-provider-health]
+verify_jwt = true
+
+[functions.nexora-payments]
+verify_jwt = true
+
+[functions.nexora-asaas-sandbox-payments]
+verify_jwt = true
+
+[functions.nexora-asaas-payments]
+verify_jwt = true
+
+[functions.nexora-asaas-webhook]
+verify_jwt = false
+
+[functions.nexora-asaas-transfer-webhook]
+verify_jwt = false
+
+[functions.nexora-payout-request]
+verify_jwt = true
+
+[functions.nexora-payout-admin]
+verify_jwt = true
+
+[functions.nexora-payout-merchant]
+verify_jwt = true
+
+[functions.nexora-payout-readiness]
+verify_jwt = true
+
+[functions.nexora-mercadopago-payout-webhook]
+verify_jwt = false
+
+[functions.nexora-mercadopago-webhook]
+verify_jwt = false
+
+[functions.nexora-checkout]
+verify_jwt = false
+
+[functions.nexora-merchant-webhooks]
+verify_jwt = true
+
+[functions.nexora-merchant-api-keys]
+verify_jwt = true
+
+[functions.nexora-api-v1]
+verify_jwt = false
+
+[functions.nexora-webhook-deliveries]
+verify_jwt = false
+
+[functions.nexora-reconcile-asaas]
+verify_jwt = true
+
+[functions.nexora-reconciliation-admin]
+verify_jwt = true
+
+[functions.nexora-reserve-release]
+verify_jwt = true
+
+[functions.nexora-settlement-release]
+verify_jwt = true
+
+[functions.nexora-fund-controls]
+verify_jwt = true
+
+[functions.nexora-admin-delete-user]
+verify_jwt = true
+
+[auth]
+additional_redirect_urls = ["https://www.nexorapay.me/**", "https://nexorapay-demo.vercel.app/**"]
+enable_signup = true
+site_url = "https://www.nexorapay.me"
+
+[auth.email]
+max_frequency = "1m0s"
+otp_length = 8
+
+[auth.rate_limit]
+email_sent = 30
+
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true
+
+[db.pooler]
+default_pool_size = 15
+max_client_conn = 200
+
+[storage.analytics]
+enabled = true
+max_namespaces = 10
+
+[storage.image_transformation]
+enabled = true

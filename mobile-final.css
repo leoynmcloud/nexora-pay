@@ -1,0 +1,102 @@
+/* Última camada responsiva compartilhada; carregada depois dos estilos de cada tela. */
+html{scroll-padding-top:76px}body{overflow-x:clip}
+@media(max-width:850px){
+  .nav-links{display:none!important}
+  .mobile-menu:not([open]){display:none!important}
+  .mobile-menu[open]{position:fixed;inset:0;z-index:100;display:flex!important;width:100vw;height:100dvh;min-height:0;max-width:none;max-height:none;margin:0;padding:calc(20px + env(safe-area-inset-top)) 22px calc(20px + env(safe-area-inset-bottom));box-sizing:border-box;overflow-x:hidden;overflow-y:auto;background:var(--bg);color:var(--text);opacity:1;visibility:visible;transform:none;pointer-events:auto}
+  .mobile-menu::backdrop{background:var(--bg)}
+  .mobile-menu-head{flex:0 0 auto}
+  .mobile-menu .mobile-menu-cta{margin-top:auto}
+  .hero-copy{min-width:0;max-width:100%}
+  .hero h1{max-width:100%;overflow-wrap:normal;line-height:1.02}
+  .hero h1 em{display:block;min-height:2.15em;max-width:100%;overflow-wrap:anywhere;line-height:1.05}
+  .hero-actions{gap:12px}
+  .hero-actions .button,.hero-actions .text-link{min-height:48px}
+  .cookie-banner{bottom:max(10px,env(safe-area-inset-bottom));max-height:calc(100dvh - 24px);overflow:auto;padding:16px}
+  .cookie-actions{display:grid;grid-template-columns:1fr;gap:8px}
+  .cookie-actions .button{width:100%;min-height:44px}
+
+  .platform-body .platform-mobile-header{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right));padding-top:max(8px,env(safe-area-inset-top))}
+  .platform-body .platform-drawer[open]{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+  .platform-body .platform-drawer .sidebar{min-height:0;overscroll-behavior:contain}
+  .platform-body .app-main{box-sizing:border-box;max-width:100%;padding-left:clamp(12px,4vw,20px);padding-right:clamp(12px,4vw,20px);padding-bottom:max(36px,env(safe-area-inset-bottom))}
+  .platform-body .app-header h1{max-width:100%;overflow-wrap:anywhere}
+  .platform-body .header-actions{align-items:stretch}
+  .platform-body .header-actions>*{min-height:42px}
+  .platform-body .metric-card,.platform-body .panel{min-width:0}
+  .platform-body .panel-head{flex-wrap:wrap}
+  .platform-body .panel-head>label,.platform-body .panel-head>select{max-width:100%}
+
+  .admin-main.admin-shell{box-sizing:border-box;padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right));padding-bottom:max(32px,env(safe-area-inset-bottom))}
+  .admin-header{flex-wrap:wrap;padding-top:max(8px,env(safe-area-inset-top));padding-bottom:10px}
+  .admin-header-title{min-width:0}
+  .admin-header-title strong{overflow-wrap:anywhere}
+  .admin-actions{min-width:0}
+  .admin-actions>*{min-height:40px}
+  .admin-heading h1,.admin-panel h2{overflow-wrap:anywhere}
+  .admin-panel{min-width:0;overflow:hidden}
+  .admin-panel-head{min-width:0;flex-wrap:wrap}
+  .admin-panel-head>div{min-width:0;max-width:100%}
+  .admin-panel-head>button,.admin-panel-head>label{max-width:100%}
+  .nx-table-wrap{max-width:100%;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+  .nx-dialog.admin-review-dialog{padding:0}
+
+  .onboarding-body{box-sizing:border-box;padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right));padding-bottom:max(24px,env(safe-area-inset-bottom))}
+  .onboarding-shell,.onboarding-card{min-width:0;max-width:100%}
+  .onboarding-card h1,.onboarding-card legend{overflow-wrap:anywhere}
+}
+@media(max-width:540px){
+  .nav{gap:8px;padding-left:14px;padding-right:14px}
+  .nav .brand-logo-img{max-width:125px;height:32px;max-height:32px;width:auto;object-fit:contain}
+  .nav-auth{gap:5px;margin-right:0}
+  .nav-auth .theme-toggle{flex:0 0 36px}
+  .hero.shell{padding-left:16px;padding-right:16px}
+  .hero h1{font-size:clamp(38px,11.5vw,54px)}
+  .hero-text{max-width:36ch;font-size:15px}
+  .hero-actions{align-items:stretch;flex-direction:column;max-width:360px}
+  .hero-actions .button,.hero-actions .text-link{justify-content:center;width:100%;box-sizing:border-box}
+  .hero-actions .text-link{padding:10px}
+  .hero-visual{height:clamp(250px,75vw,360px)}
+  .dashboard-card{max-width:94%;height:clamp(190px,55vw,250px)}
+  .float-card{max-width:70%;box-sizing:border-box}
+  .cookie-banner{width:calc(100% - 20px);padding:14px;border-radius:14px}
+
+  .platform-body .platform-mobile-header{grid-template-columns:42px minmax(0,1fr) 42px;gap:8px;min-height:60px}
+  .platform-body .platform-mobile-brand img{width:116px}
+  .platform-body .app-header h1{font-size:clamp(27px,8vw,34px)}
+  .platform-body .header-actions{justify-content:stretch}
+  .platform-body .header-actions .button-primary{flex:1 1 100%}
+  .platform-body .dashboard-grid,.platform-body .metric-grid{grid-template-columns:minmax(0,1fr)}
+  .platform-body .metric-grid .metric-card:last-child{grid-column:auto}
+  .platform-body .panel{padding:16px}
+  .platform-body .nx-table{min-width:620px}
+
+  .admin-header{display:grid;grid-template-columns:40px minmax(0,1fr);gap:8px}
+  .admin-mobile-menu-toggle{grid-row:1;grid-column:1}
+  .admin-header-title{grid-row:1;grid-column:2}
+  .admin-actions{grid-row:2;grid-column:1/-1;display:grid;grid-template-columns:40px minmax(80px,1fr) minmax(52px,auto);width:100%;gap:7px}
+  .admin-actions .theme-toggle,.admin-actions .button{min-height:40px}
+  .admin-actions .admin-return-link{display:none}
+  .admin-actions [data-admin-refresh],.admin-actions [data-admin-logout]{justify-content:center;margin:0}
+  .admin-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .admin-stat{min-width:0;padding:13px}
+  .admin-stat strong{font-size:clamp(18px,6vw,23px);overflow-wrap:anywhere}
+  .admin-panel{padding:14px}
+  .admin-panel-head label{display:block}
+  .admin-panel-head input{box-sizing:border-box}
+  .admin-panel .nx-table{min-width:610px}
+  .nx-dialog.admin-review-dialog{width:calc(100vw - 16px);max-height:calc(100dvh - 16px)}
+  .kyc-review-details{grid-template-columns:1fr}
+  .kyc-file-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+  .auth-body{padding-left:12px;padding-right:12px}
+  .auth-card{padding:22px 17px}
+  .onboarding-card{padding:20px 14px}
+}
+@media(max-width:360px){
+  .admin-stats{grid-template-columns:1fr}
+  .admin-actions{grid-template-columns:38px minmax(70px,1fr) 50px}
+  .kyc-file-grid{grid-template-columns:1fr}
+  .hero h1{font-size:38px}
+}
+@media(prefers-reduced-motion:reduce){.mobile-menu[open]{transition:none}}

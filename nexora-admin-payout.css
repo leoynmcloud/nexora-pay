@@ -1,0 +1,8 @@
+.admin-payout-review{margin-top:28px;padding-top:24px;border-top:1px solid #292934}
+.admin-payout-review h3{font-family:'Space Grotesk';font-size:18px;margin:0}
+.admin-payout-notice{padding:12px 14px;border:1px solid #7153ad;border-radius:10px;background:#21182f;color:#d8c7ff!important}
+.theme-light .admin-payout-review{border-color:#dfe1eb}
+.theme-light .admin-payout-notice{background:#f4efff;color:#56389a!important;border-color:#d8c7ff}
+.admin-payout-review [data-admin-payout-message]{min-height:20px;color:#858492;font-size:12px;margin:8px 0}
+.admin-payout-review .table-action.danger{color:#c14658;border-color:#dca6ad}
+@media(max-width:700px){.admin-payout-review .admin-panel-head{align-items:flex-start;flex-direction:column}.admin-payout-review .admin-panel-head button{width:100%}}

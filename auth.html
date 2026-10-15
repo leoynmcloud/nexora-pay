@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive">
+<title>Acesso Seguro — Nexora Pay</title><link rel="icon" type="image/png" href="favicon.png"><link rel="apple-touch-icon" href="nexora-icon.png"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="enhancements.css"><link rel="stylesheet" href="auth.css"><link rel="stylesheet" href="nexora-app.css"><link rel="stylesheet" href="mobile-final.css">
+</head><body class="auth-body">
+<main class="auth-shell">
+  <div class="auth-top">
+    <a class="auth-brand" href="index.html" aria-label="Ir para página inicial"><img class="brand-logo-img" src="logo-nexora-purple.svg" alt="Nexora Pay"></a>
+    <div class="auth-trust-badge"><span class="auth-trust-dot"></span> Ambiente Seguro &middot; Criptografia AES-256</div>
+  </div>
+  <section class="auth-card">
+    <div class="auth-tabs" role="tablist" aria-label="Modo de autenticação">
+      <button type="button" class="auth-tab active" data-tab-mode="login" role="tab" aria-selected="true">Entrar</button>
+      <button type="button" class="auth-tab" data-tab-mode="signup" role="tab" aria-selected="false">Criar Conta</button>
+    </div>
+    <div class="auth-heading"><span class="eyebrow purple" data-auth-kicker>ACESSO NEXORA PAY</span><h1 data-auth-title>Bem-vindo de volta.</h1><p data-auth-description>Entre para acompanhar sua operação.</p></div>
+    <section class="auth-mfa-setup" data-auth-mfa-setup hidden aria-live="polite"><p>Use um aplicativo autenticador (Google Authenticator, Microsoft Authenticator, 1Password) para escanear o QR Code.</p><div data-auth-mfa-qr></div><p>Se não puder escanear, cadastre esta chave manualmente: <code data-auth-mfa-secret></code></p></section>
+    <form id="auth-form" novalidate>
+      <label data-auth-name><span>Nome completo</span><div class="auth-input-wrap"><input id="auth-name" type="text" autocomplete="name" maxlength="160" placeholder="Seu nome completo"></div></label>
+      <label data-auth-email><span>E-mail</span><div class="auth-input-wrap"><input id="auth-email" type="email" autocomplete="email" maxlength="254" placeholder="voce@empresa.com" required></div></label>
+      <label data-auth-phone><span>Telefone / WhatsApp</span><div class="auth-input-wrap"><input id="auth-phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" placeholder="(11) 99999-9999"></div></label>
+      <label data-auth-code hidden><span>Código de verificação</span><div class="auth-input-wrap"><input id="auth-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" pattern="[0-9]{6,10}" placeholder="Digite o código" aria-describedby="auth-code-help"></div></label>
+      <small id="auth-code-help" class="auth-code-help" data-auth-code-help hidden>Confira a caixa de entrada e o spam. O código expira em instantes.</small>
+      <label data-auth-password><span>Senha</span><div class="auth-input-wrap"><input id="auth-password" type="password" autocomplete="current-password" minlength="8" placeholder="No mínimo 8 caracteres" required></div></label>
+      <label data-auth-confirm hidden><span>Confirme a nova senha</span><div class="auth-input-wrap"><input id="auth-confirm" type="password" autocomplete="new-password" minlength="8" placeholder="Repita a senha"></div></label>
+      <label class="nx-check" data-auth-terms hidden><input id="auth-terms" type="checkbox"><span>Li e concordo com os <a href="termos.html" target="_blank" rel="noopener">Termos de Uso</a> e a <a href="privacidade.html" target="_blank" rel="noopener">Privacidade</a>.</span></label>
+      <div id="auth-captcha" class="auth-captcha" aria-live="polite" hidden></div>
+      <button class="button button-primary auth-submit" type="submit"><span data-auth-submit>Entrar no painel</span><span class="auth-arrow" aria-hidden="true">&rarr;</span></button>
+      <p class="auth-message" role="status" aria-live="polite"></p>
+    </form>
+    <div class="auth-secondary-actions">
+      <button type="button" class="nx-link" data-auth-forgot>Esqueci minha senha</button>
+      <button type="button" class="nx-link auth-resend" data-auth-resend hidden>Enviar outro código</button>
+    </div>
+    <div class="auth-switch"><span data-auth-switch-text>Ainda não tem uma conta?</span><button type="button" data-auth-switch>Criar conta</button></div>
+  </section>
+  <footer class="auth-footer-info"><p class="auth-footnote">Nexora Pay &middot; Sem mensalidade ou taxas de adesão. Plataforma de pagamentos de alta velocidade.</p></footer>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script><script src="supabase-client.js"></script>
+<script src="nexora-core.js"></script><script src="nexora-ui.js"></script><script src="nexora-api.js"></script><script src="nexora-icons.js"></script><script src="theme-toggle.js"></script><script src="site-settings.js"></script><script src="auth-captcha-config.js"></script><script src="auth.js"></script>
+</body></html>

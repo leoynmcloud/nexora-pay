@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="theme-color" content="#f5f6fb">
+  <title>Checkout seguro · Nexora Pay</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="nexora-icon.png">
+  <link rel="stylesheet" href="checkout.css">
+</head>
+<body>
+  <main class="checkout-shell">
+    <header class="checkout-brand"><img class="brand-logo-img" src="logo-nexora-purple.svg" alt="Nexora Pay"></header>
+    <section class="checkout-card" aria-labelledby="checkout-title">
+      <p class="eyebrow">PAGAMENTO SEGURO</p>
+      <h1 id="checkout-title">Checkout</h1>
+      <div id="checkout-content" aria-live="polite" aria-busy="true"><p class="checkout-message">Carregando cobrança…</p></div>
+      <p class="checkout-footnote">A Nexora não solicita senha bancária nem código de autenticação.</p>
+    </section>
+    <footer>Pagamento processado com tecnologia e segurança por Nexora Pay.</footer>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="site-settings.js"></script>
+  <script src="checkout-view-model.js"></script>
+  <script src="brazilian-documents.js"></script>
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
+  <script src="checkout-card-config.js"></script>
+  <script src="checkout-app.js"></script>
+</body>
+</html>

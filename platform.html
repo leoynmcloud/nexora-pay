@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" class="theme-light">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Sua operação — Nexora Pay</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="nexora-icon.png">
+  <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="recent-access.css"><link rel="stylesheet" href="enhancements.css">
+  <link rel="stylesheet" href="theme-fixes.css"><link rel="stylesheet" href="nexora-app.css"><link rel="stylesheet" href="nexora-platform-payout.css"><link rel="stylesheet" href="mobile-final.css"><link rel="stylesheet" href="mobile-platform-admin.css">
+</head>
+<body class="platform-body">
+  <div class="app-shell" hidden>
+    <header class="platform-mobile-header">
+      <button type="button" class="platform-mobile-menu-button" data-platform-menu aria-label="Abrir navegação" aria-haspopup="dialog" aria-controls="platformNavDrawer"><span data-nx-icon="menu"></span></button>
+      <a class="platform-mobile-brand" href="index.html"><img src="logo-nexora-purple.svg" alt="Nexora Pay"></a>
+      <button type="button" class="platform-mobile-account" data-mobile-account aria-label="Abrir menu da conta"><span data-nx-icon="user"></span></button>
+    </header>
+    <dialog id="platformNavDrawer" class="platform-drawer" aria-label="Navegação da plataforma">
+    <aside class="sidebar">
+      <button type="button" class="platform-drawer-close" data-platform-menu-close aria-label="Fechar navegação"><span data-nx-icon="close"></span></button>
+      <a class="brand" href="index.html"><img class="brand-logo-img" src="logo-nexora-purple.svg" alt="Nexora Pay"></a>
+      <div class="workspace"><span>Workspace</span><strong>Minha operação</strong></div>
+      <nav class="side-nav" aria-label="Navegação da plataforma">
+        <small>VISÃO GERAL</small>
+        <a href="#resumo" data-route="resumo"><span data-nx-icon="home" aria-hidden="true"></span> Visão geral</a>
+        <a href="#transacoes" data-route="transacoes"><span data-nx-icon="activity" aria-hidden="true"></span> Transações</a>
+        <a href="#extrato" data-route="extrato"><span data-nx-icon="activity" aria-hidden="true"></span> Extrato</a>
+        <a href="#saques" data-route="saques"><span data-nx-icon="arrows" aria-hidden="true"></span> Saques</a>
+        <small>GERENCIAR</small>
+        <a href="#clientes" data-route="clientes"><span data-nx-icon="users" aria-hidden="true"></span> Clientes</a>
+        <a href="#integracoes" data-route="integracoes"><span data-nx-icon="integrations" aria-hidden="true"></span> Integrações</a>
+        <a href="#webhooks" data-route="webhooks"><span data-nx-icon="activity" aria-hidden="true"></span> Webhooks</a>
+        <a href="#configuracoes" data-route="configuracoes"><span data-nx-icon="settings" aria-hidden="true"></span> Configurações</a>
+      </nav>
+      <section class="recent-access" id="platform-recent-access" aria-label="Acessado recentemente" hidden><small>ACESSADO RECENTEMENTE</small><div data-recent-links></div></section>
+      <div class="sidebar-bottom">
+        <a href="#ajuda" class="nx-help"><span data-nx-icon="help" aria-hidden="true"></span> Ajuda e suporte</a>
+        <div class="profile"><i>NX</i><span><b>Sua conta</b><small>Conta principal</small></span><b aria-hidden="true">•••</b></div>
+      </div>
+    </aside>
+    </dialog>
+    <main class="app-main" aria-live="polite"><div class="nx-empty">Carregando sua conta…</div></main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script><script src="supabase-client.js"></script>
+  <script src="nexora-core.js"></script><script src="nexora-ui.js"></script><script src="nexora-api.js"></script>
+  <script src="nexora-icons.js"></script><script src="theme-toggle.js"></script><script src="recent-access.js"></script><script src="site-settings.js"></script>
+  <script src="ledger-balance-history.js"></script><script src="brazilian-documents.js"></script><script src="platform-app.js"></script><script src="profile-menu.js"></script><script src="workspace-menu.js"></script><script src="platform-mobile-menu.js"></script>
+  <script src="access-guard.js"></script>
+</body>
+</html>
