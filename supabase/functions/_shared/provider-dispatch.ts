@@ -1,5 +1,6 @@
 import { handleAsaasPaymentRequest } from './asaas-payments.ts';
 import { handleMercadoPagoPaymentRequest } from './mercadopago-payments.ts';
+import { handlePushinPayPaymentRequest } from './pushinpay-payments.ts';
 import { providerAdapterRoute } from './provider-registry.ts';
 
 type PaymentAdapterHandler = (request: Request, sandboxOnly: boolean) => Promise<Response>;
@@ -8,6 +9,7 @@ type PaymentAdapterHandler = (request: Request, sandboxOnly: boolean) => Promise
 const handlers: Readonly<Record<string, PaymentAdapterHandler>> = Object.freeze({
   asaas: handleAsaasPaymentRequest,
   mercadopago: handleMercadoPagoPaymentRequest,
+  pushinpay: handlePushinPayPaymentRequest,
 });
 
 export async function dispatchPaymentRequest(providerCode: unknown, request: Request): Promise<Response | null> {

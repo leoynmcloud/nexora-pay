@@ -6,6 +6,7 @@ import { providerAdapterRoute, registeredProviderCodes } from './provider-regist
 test('hosted checkout routes supported production providers through provider adapters', () => {
   assert.equal(hostedCheckoutAdapter('asaas_production'), 'asaas');
   assert.equal(hostedCheckoutAdapter('mercadopago_production'), 'mercadopago');
+  assert.equal(hostedCheckoutAdapter('pushinpay_production'), 'pushinpay');
 });
 
 test('hosted checkout rejects unknown, malformed, and sandbox routes', () => {

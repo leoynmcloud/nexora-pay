@@ -112,7 +112,7 @@ describe('hosted checkout public token and payer validation', () => {
   it('persists definitive provider rejections but leaves ambiguous outcomes available for read-only recovery', () => {
     assert.match(checkoutHandler, /isDefinitiveMercadoPagoCreateRejection\(code\)/);
     assert.match(checkoutHandler, /isDefinitiveAsaasCreateRejection\(created\.response\.status\)/);
-    assert.equal((checkoutHandler.match(/nexora_provider_fail_charge_attempt/g) || []).length, 2);
+    assert.equal((checkoutHandler.match(/nexora_provider_fail_charge_attempt/g) || []).length, 3);
     const mpStart = checkoutHandler.indexOf('async function handleMercadoPagoPublicPayment');
     const asaasStart = checkoutHandler.indexOf('async function handleNeutralAsaasAttempt');
     const mpFlow = checkoutHandler.slice(mpStart, asaasStart);

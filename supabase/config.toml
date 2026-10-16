@@ -73,6 +73,9 @@ verify_jwt = true
 [functions.nexora-admin-delete-user]
 verify_jwt = true
 
+[functions.nexora-pushinpay-webhook]
+verify_jwt = false
+
 [auth]
 additional_redirect_urls = ["https://www.nexorapay.me/**", "https://nexorapay-demo.vercel.app/**"]
 enable_signup = true
