@@ -8,6 +8,11 @@
 -- 4. Somente após a aprovação manual do Super Admin a conta e os controles são liberados.
 -- =============================================================================
 
+-- 0. Garante colunas de perfil
+alter table public.profiles add column if not exists email text;
+alter table public.profiles add column if not exists status text not null default 'active';
+alter table public.profiles add column if not exists is_admin boolean not null default false;
+
 -- 1. Função de provisionamento inicial (chamada no signup e em get_my_access)
 -- Cria estrutura básica do lojista em modo DRAFT e com controles desabilitados até aprovação.
 create or replace function public.nexora_provision_merchant(p_user_id uuid)
@@ -23,7 +28,6 @@ declare
   v_business_id uuid;
   v_acquirer_id uuid;
   v_kyc_status text;
-  v_acct_type text;
 begin
   if p_user_id is null then
     return null;
@@ -50,11 +54,21 @@ begin
   );
 
   -- 1. Garante perfil ativo
-  insert into public.profiles (id, email, full_name, role, status)
-  values (v_user.id, coalesce(v_user.email, ''), v_name, case when v_is_admin then 'admin' else 'owner' end, 'active')
+  insert into public.profiles (id, email, full_name, role, status, is_admin)
+  values (
+    v_user.id,
+    coalesce(v_user.email, ''),
+    v_name,
+    case when v_is_admin then 'admin' else 'owner' end,
+    'active',
+    v_is_admin
+  )
   on conflict (id) do update
-  set email = excluded.email,
-      full_name = coalesce(nullif(public.profiles.full_name, ''), excluded.full_name);
+  set email = coalesce(nullif(excluded.email, ''), public.profiles.email),
+      full_name = coalesce(nullif(public.profiles.full_name, ''), excluded.full_name),
+      role = case when excluded.role = 'admin' then 'admin' else public.profiles.role end,
+      status = coalesce(public.profiles.status, 'active'),
+      is_admin = (v_is_admin or public.profiles.is_admin);
 
   -- 2. Garante onboarding inicial como DRAFT para clientes (ou APPROVED apenas para Super Admin)
   insert into public.merchant_onboarding (
@@ -101,16 +115,21 @@ begin
   end if;
 
   -- 4. Garante membro no workspace
-  insert into public.workspace_members (business_id, user_id, role, status)
-  values (v_business_id, v_user.id, 'owner', 'active')
+  insert into public.workspace_members (business_id, user_id, role)
+  values (v_business_id, v_user.id, 'owner')
   on conflict do nothing;
 
   -- 5. Garante contas do ledger
-  foreach v_acct_type in array array['available', 'pending', 'reserved', 'blocked', 'fee_revenue'] loop
-    insert into public.nexora_ledger_accounts (business_id, owner_id, account_type, currency)
-    values (v_business_id, v_user.id, v_acct_type, 'BRL')
-    on conflict (business_id, account_type, currency) do nothing;
-  end loop;
+  insert into public.nexora_ledger_accounts (owner_id, business_id, account_code, account_class, currency)
+  values
+    (v_user.id, v_business_id, 'provider_clearing', 'asset', 'BRL'),
+    (v_user.id, v_business_id, 'merchant_pending', 'liability', 'BRL'),
+    (v_user.id, v_business_id, 'merchant_available', 'liability', 'BRL'),
+    (v_user.id, v_business_id, 'merchant_reserved', 'liability', 'BRL'),
+    (v_user.id, v_business_id, 'merchant_blocked', 'liability', 'BRL'),
+    (v_user.id, v_business_id, 'platform_fee_revenue', 'income', 'BRL'),
+    (v_user.id, v_business_id, 'provider_fee_expense', 'expense', 'BRL')
+  on conflict (business_id, account_code) do nothing;
 
   -- 6. Garante controles operacionais (desabilitados enquanto não aprovado)
   insert into public.nexora_merchant_controls (
@@ -160,21 +179,20 @@ begin
         business_id,
         owner_id,
         acquirer_id,
-        environment,
         status,
-        api_key_configured,
         updated_at
       )
       values (
         v_business_id,
         v_user.id,
         v_acquirer_id,
-        'production',
         'active',
-        true,
         now()
       )
-      on conflict (business_id) do nothing;
+      on conflict (business_id) do update set
+        acquirer_id = excluded.acquirer_id,
+        status = 'active',
+        updated_at = now();
 
       insert into public.nexora_pricing_rules (
         business_id,
@@ -762,7 +780,6 @@ declare
   v_business_id uuid;
   v_acquirer_id uuid;
   v_document text;
-  v_acct_type text;
 begin
   if not public.is_nexora_super_admin() then
     raise exception 'Acesso restrito ao Super Admin.';
@@ -832,15 +849,20 @@ begin
       returning id into v_business_id;
     end if;
 
-    insert into public.workspace_members(business_id, user_id, role, status)
-    values (v_business_id, p_user_id, 'owner', 'active')
+    insert into public.workspace_members(business_id, user_id, role)
+    values (v_business_id, p_user_id, 'owner')
     on conflict do nothing;
 
-    foreach v_acct_type in array array['available', 'pending', 'reserved', 'blocked', 'fee_revenue'] loop
-      insert into public.nexora_ledger_accounts (business_id, owner_id, account_type, currency)
-      values (v_business_id, p_user_id, v_acct_type, 'BRL')
-      on conflict (business_id, account_type, currency) do nothing;
-    end loop;
+    insert into public.nexora_ledger_accounts (owner_id, business_id, account_code, account_class, currency)
+    values
+      (p_user_id, v_business_id, 'provider_clearing', 'asset', 'BRL'),
+      (p_user_id, v_business_id, 'merchant_pending', 'liability', 'BRL'),
+      (p_user_id, v_business_id, 'merchant_available', 'liability', 'BRL'),
+      (p_user_id, v_business_id, 'merchant_reserved', 'liability', 'BRL'),
+      (p_user_id, v_business_id, 'merchant_blocked', 'liability', 'BRL'),
+      (p_user_id, v_business_id, 'platform_fee_revenue', 'income', 'BRL'),
+      (p_user_id, v_business_id, 'provider_fee_expense', 'expense', 'BRL')
+    on conflict (business_id, account_code) do nothing;
 
     insert into public.nexora_merchant_controls (
       business_id, owner_id, payments_enabled, withdrawals_enabled, api_enabled, pix_out_enabled,
@@ -864,12 +886,12 @@ begin
 
     if v_acquirer_id is not null then
       insert into public.nexora_merchant_provider_connections (
-        business_id, owner_id, acquirer_id, environment, status, api_key_configured, updated_at
+        business_id, owner_id, acquirer_id, status, updated_at
       ) values (
-        v_business_id, p_user_id, v_acquirer_id, 'production', 'active', true, now()
+        v_business_id, p_user_id, v_acquirer_id, 'active', now()
       ) on conflict (business_id) do update set
+        acquirer_id = excluded.acquirer_id,
         status = 'active',
-        api_key_configured = true,
         updated_at = now();
 
       insert into public.nexora_pricing_rules (
