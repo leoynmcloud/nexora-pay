@@ -191,7 +191,7 @@
 /* Inbound Webhook Configuration Cards */
 .admin-webhook-config-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: 16px;
   margin: 16px 0 24px;
 }
@@ -203,12 +203,14 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-width: 0;
 }
 .admin-webhook-card-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  flex-wrap: wrap;
 }
 .admin-webhook-desc {
   font-size: 12px;
@@ -220,9 +222,11 @@
   display: flex;
   gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
 }
 .admin-webhook-input {
-  flex: 1;
+  flex: 1 1 180px;
+  min-width: 0;
   padding: 8px 10px;
   font-family: monospace;
   font-size: 12px;
@@ -240,6 +244,7 @@
   line-height: 1.4;
   padding-top: 6px;
   border-top: 1px solid var(--line);
+  overflow-wrap: anywhere;
 }
 .admin-webhook-hints code {
   color: var(--purple, #7c3aed);
@@ -253,6 +258,47 @@
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--panel2, rgba(255,255,255,0.02));
+}
+
+@media (max-width: 900px) {
+  .admin-heading-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .admin-export-group {
+    width: 100%;
+  }
+  .admin-export-group .button {
+    flex: 1 1 140px;
+    justify-content: center;
+  }
+  .admin-actions-group {
+    width: 100%;
+  }
+  .admin-actions-group > label {
+    flex: 1 1 200px;
+    width: auto !important;
+  }
+  .admin-actions-group > .button {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+  .provider-health-compact-head {
+    align-items: flex-start;
+  }
+  .provider-health-compact-head > .button {
+    width: 100%;
+    justify-content: center;
+  }
+  .admin-reconciliation-form label {
+    flex: 1 1 200px;
+    min-width: 0;
+  }
+  .admin-reconciliation-form > .button {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
 }
 
 /* Print Styles for Executive PDF Report */

@@ -67,18 +67,54 @@
     }
     el.innerHTML = '<button class="button outline compact" aria-label="Página anterior de ' + label + '" data-page="' + prefix + '-prev"' + (current === 0 ? ' disabled' : '') + '>Anterior</button><span role="status" aria-live="polite">Página ' + (current + 1) + ' de ' + totalPages + ' · ' + total + ' ' + label + '</span><button class="button outline compact" aria-label="Próxima página de ' + label + '" data-page="' + prefix + '-next"' + ((current + 1) * 25 >= total ? ' disabled' : '') + '>Próxima</button>';
   };
-  async function load() {
-    const revision = ++request; say('Atualizando…');
+  const ADMIN_CACHE_KEY = 'nexora_admin_cache_v1';
+  function saveAdminCache() {
+    if (page !== 0 || customerPage !== 0 || query || customerQuery || !data) return;
     try {
-      const result = await API.rpc('nexora_admin_snapshot', {p_query:query,p_page:page,p_limit:25,p_customer_query:customerQuery,p_customer_page:customerPage});
+      sessionStorage.setItem(ADMIN_CACHE_KEY, JSON.stringify({ data, dashboardMetrics, ts: Date.now() }));
+    } catch (_) {}
+  }
+  async function load() {
+    const revision = ++request;
+    if (!data && page === 0 && customerPage === 0 && !query && !customerQuery) {
+      try {
+        const cached = JSON.parse(sessionStorage.getItem(ADMIN_CACHE_KEY) || 'null');
+        if (cached?.data && (Date.now() - (cached.ts || 0) < 300000)) {
+          data = cached.data;
+          if (cached.dashboardMetrics) dashboardMetrics = cached.dashboardMetrics;
+          render();
+        }
+      } catch (_) {}
+    }
+    say('Atualizando…');
+    try {
+      const snapshotPromise = API.rpc('nexora_admin_snapshot', {p_query:query,p_page:page,p_limit:25,p_customer_query:customerQuery,p_customer_page:customerPage});
+      const primaryPromise = Promise.allSettled([loadDashboardMetrics(), loadKyc(), loadOperations()]);
+      const result = await snapshotPromise;
       if (revision !== request) return;
-      data = result; render(); await Promise.all([loadKyc(), loadOperations(), loadDashboardMetrics(), loadAdminWebhooks(), loadReconciliationRuns(), loadMaturedReserves(), loadAdminPayouts(), loadAdminFundHolds(), loadLedgerBalances()]); render(); say('Dados carregados do Supabase · ' + new Date().toLocaleTimeString('pt-BR')); return true;
+      data = result;
+      saveAdminCache();
+      render();
+      await primaryPromise;
+      if (revision !== request) return;
+      render();
+      say('Dados carregados do Supabase · ' + new Date().toLocaleTimeString('pt-BR'));
+      Promise.allSettled([
+        loadAdminPayouts(),
+        loadLedgerBalances(),
+        loadAdminWebhooks(),
+        loadAdminFundHolds(),
+        loadMaturedReserves(),
+        loadReconciliationRuns()
+      ]);
+      return true;
     } catch (error) { say(error.message); return false; }
   }
   async function loadDashboardMetrics() {
     try {
       dashboardMetrics = await API.rpc('nexora_admin_dashboard_metrics');
       dashboardMetricsError = '';
+      saveAdminCache();
     } catch (_) {
       dashboardMetrics = null;
       dashboardMetricsError = 'Os gráficos ficam disponíveis após executar nexora-admin-dashboard-metrics.sql no Supabase.';
@@ -452,11 +488,25 @@
       await loadAdminWebhooks(); UI.toast('Webhook colocado na fila para reenvio.');
     },{submitLabel:'Confirmar reenvio'});
   }
+  async function fetchAdminCatalog() {
+    if (providerCatalog && providerCatalog.length) return { data: { providers: providerCatalog } };
+    try {
+      const cached = JSON.parse(sessionStorage.getItem('nexora_provider_catalog_v2') || 'null');
+      if (cached && Array.isArray(cached.providers) && cached.providers.length && (Date.now() - (cached.ts || 0) < 600000)) {
+        return { data: { providers: cached.providers } };
+      }
+    } catch (_) {}
+    const res = await window.nexoraSupabase.functions.invoke('nexora-payments', { body: { action: 'catalog' } });
+    if (Array.isArray(res?.data?.providers) && res.data.providers.length) {
+      try { sessionStorage.setItem('nexora_provider_catalog_v2', JSON.stringify({ providers: res.data.providers, ts: Date.now() })); } catch (_) {}
+    }
+    return res;
+  }
   async function loadOperations() {
     const results = await Promise.allSettled([
       API.rpc('nexora_admin_acquirers'), API.rpc('nexora_admin_provider_connections'),
       API.rpc('nexora_admin_merchant_controls'), API.rpc('nexora_admin_notifications',{p_unread_only:false}),
-      window.nexoraSupabase.functions.invoke('nexora-payments',{body:{action:'catalog'}}),
+      fetchAdminCatalog(),
       API.rpc('nexora_admin_platform_provider_credentials'),
       API.rpc('nexora_admin_provider_health_snapshot')
     ]);
@@ -1455,6 +1505,7 @@
     try {
       const content = Object.fromEntries([...new FormData(form)].filter(([key,value]) => typeof value === 'string').map(([key,value]) => [key,value.trim()]));
       await API.rpc('nexora_admin_save_site',{p_content:content});
+      window.NexoraSite?.updateCache?.(content);
       delete form.dataset.dirty;
       if (content.logo_url) {
         document.querySelectorAll('.brand-logo-img').forEach(img => { img.src = content.logo_url; img.dataset.customLogo = 'true'; });
@@ -1502,6 +1553,7 @@
             resetBtn.disabled = true;
             status.textContent = 'Restaurando logo padrão oficial…';
             await API.rpc('nexora_admin_save_site', { p_content: { logo_url: '' } });
+            window.NexoraSite?.updateCache?.({ logo_url: '' });
             document.querySelectorAll('.brand-logo-img').forEach(img => {
               img.src = 'logo-nexora-purple.svg';
               delete img.dataset.customLogo;
@@ -1534,6 +1586,7 @@
       if (!logoUrl.startsWith('https://')) throw new Error('A URL da logo deve começar com https://');
       status.textContent = 'Publicando nas configurações…';
       await API.rpc('nexora_admin_save_site', { p_content: { logo_url: logoUrl } });
+      window.NexoraSite?.updateCache?.({ logo_url: logoUrl });
       document.querySelectorAll('.brand-logo-img').forEach(img => {
         img.src = logoUrl;
         img.dataset.customLogo = 'true';
@@ -1714,13 +1767,38 @@
   (async () => {
     try {
       if (!window.nexoraSupabase) throw new Error('Supabase não configurado.');
+      try {
+        const cached = JSON.parse(sessionStorage.getItem(ADMIN_CACHE_KEY) || 'null');
+        if (cached?.data && (Date.now() - (cached.ts || 0) < 300000)) {
+          data = cached.data;
+          if (cached.dashboardMetrics) dashboardMetrics = cached.dashboardMetrics;
+          render();
+        }
+      } catch (_) {}
       const {data:{session},error} = await window.nexoraSupabase.auth.getSession(); if (error) throw error;
-      if (!session) return location.replace('auth.html');
-      const { data: factors, error: factorsError } = await window.nexoraSupabase.auth.mfa.listFactors(); if (factorsError) throw factorsError;
-      if (!(factors?.totp || []).some(factor => factor.status === 'verified')) return location.replace('auth.html?mode=enroll-mfa');
-      const { data: assurance, error: assuranceError } = await window.nexoraSupabase.auth.mfa.getAuthenticatorAssuranceLevel(); if (assuranceError) throw assuranceError;
-      if (assurance?.currentLevel !== 'aal2') return location.replace('auth.html?mode=verify-mfa');
-      if (await API.rpc('is_nexora_super_admin') !== true) throw new Error('Acesso restrito ao responsável da Nexora Pay.');
+      if (!session) {
+        try { sessionStorage.removeItem(ADMIN_CACHE_KEY); } catch (_) {}
+        return location.replace('auth.html');
+      }
+      const [factorsRes, assuranceRes, superAdminRes] = await Promise.all([
+        window.nexoraSupabase.auth.mfa.listFactors(),
+        window.nexoraSupabase.auth.mfa.getAuthenticatorAssuranceLevel(),
+        API.rpc('is_nexora_super_admin').catch(() => false)
+      ]);
+      if (factorsRes.error) throw factorsRes.error;
+      if (!(factorsRes.data?.totp || []).some(factor => factor.status === 'verified')) {
+        try { sessionStorage.removeItem(ADMIN_CACHE_KEY); } catch (_) {}
+        return location.replace('auth.html?mode=enroll-mfa');
+      }
+      if (assuranceRes.error) throw assuranceRes.error;
+      if (assuranceRes.data?.currentLevel !== 'aal2') {
+        try { sessionStorage.removeItem(ADMIN_CACHE_KEY); } catch (_) {}
+        return location.replace('auth.html?mode=verify-mfa');
+      }
+      if (superAdminRes !== true) {
+        try { sessionStorage.removeItem(ADMIN_CACHE_KEY); } catch (_) {}
+        throw new Error('Acesso restrito ao responsável da Nexora Pay.');
+      }
       await load();
       setInterval(() => {
         if (document.hidden || document.querySelector('dialog[open]')) return;

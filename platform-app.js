@@ -70,10 +70,19 @@
   }
   async function loadProviderCatalog() {
     if (providerCatalog && providerCatalog.length) return providerCatalog;
-    try { sessionStorage.removeItem('nexora_provider_catalog'); } catch (_) {}
+    try {
+      const cached = JSON.parse(sessionStorage.getItem('nexora_provider_catalog_v2') || 'null');
+      if (cached && Array.isArray(cached.providers) && cached.providers.length && (Date.now() - (cached.ts || 0) < 600000)) {
+        providerCatalog = cached.providers;
+        return providerCatalog;
+      }
+    } catch (_) {}
     const { data, error } = await window.nexoraSupabase.functions.invoke('nexora-payments', { body: { action: 'catalog' } });
     if (error) return [];
     providerCatalog = Array.isArray(data?.providers) ? data.providers : [];
+    if (providerCatalog.length) {
+      try { sessionStorage.setItem('nexora_provider_catalog_v2', JSON.stringify({ providers: providerCatalog, ts: Date.now() })); } catch (_) {}
+    }
     return providerCatalog;
   }
   function paymentDetailsMarkup(item) {
@@ -234,6 +243,7 @@
             }
           }
         } catch (_) {}
+        if (!state) render();
       }
 
       const data = await API.snapshot();
@@ -1175,6 +1185,14 @@
   });
   window.NexoraPlatform = { getState: () => state || { transactions: [], customers: [], settings: {} }, refreshOverview: () => { if (state) render(); }, showView, showAccount: () => showView('conta'), toast: UI.toast, confirm: UI.confirm, refresh };
   window.addEventListener('hashchange', render);
-  window.addEventListener('nexora-access-ready', () => { state = null; loadError = ''; loadedUser = null; resetStatement(); render(); refresh(); clearInterval(timer); timer = setInterval(() => { if (!document.hidden && !document.querySelector('dialog[open]') && !document.querySelector('[data-settings]')) refresh({ silent: true }); }, 60000); });
+  window.addEventListener('nexora-access-ready', () => {
+    if (loadedUser && loadedUser !== window.nexoraSessionUser?.id) {
+      state = null; loadError = ''; loadedUser = null; resetStatement();
+    }
+    if (state) render();
+    refresh();
+    clearInterval(timer);
+    timer = setInterval(() => { if (!document.hidden && !document.querySelector('dialog[open]') && !document.querySelector('[data-settings]')) refresh({ silent: true }); }, 60000);
+  });
   if (document.documentElement.dataset.nexoraAccess === 'ready') refresh();
 })();

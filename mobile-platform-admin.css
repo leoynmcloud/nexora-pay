@@ -1,4 +1,77 @@
-/* Ajustes finais de celular para a plataforma do cliente e o Painel Nexora Pay. */
+/* Ajustes finais de tablet e celular para a plataforma do cliente e o Painel Nexora Pay. */
+@media (max-width: 1150px) {
+  .platform-body .app-main { padding: 26px 24px 44px; }
+  .platform-body .ledger-balance-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .platform-body .dashboard-grid { grid-template-columns: minmax(0, 1fr); }
+  .platform-body .nx-settings { grid-template-columns: minmax(0, 1fr); }
+  .platform-body .nx-toolbar .nx-field { flex: 1 1 180px; }
+}
+
+@media (max-width: 900px) {
+  /* Painel administrativo: drawer, cabeçalho fluido e rolagem confinada às tabelas (sincronizado com 900px do JS). */
+  .admin-layout { display: block; min-height: 100dvh; }
+  .admin-main.admin-shell { width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; margin: 0; padding: 0 16px max(32px, env(safe-area-inset-bottom)); }
+  .admin-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; min-height: 0; padding: max(10px, env(safe-area-inset-top)) 0 12px; border-bottom: 1px solid var(--line); }
+  .admin-mobile-menu-toggle { display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--text); cursor: pointer; }
+  .admin-header-title { flex: 1 1 auto; min-width: 0; }
+  .admin-header-title .eyebrow { display: none; }
+  .admin-header-title strong { font-size: 15px; font-weight: 700; overflow-wrap: anywhere; }
+  .admin-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; width: 100%; margin-top: 2px; }
+  .admin-actions .button { flex: 1 1 auto; min-width: 0; min-height: 38px; justify-content: center; font-size: 12px; font-weight: 600; padding: 8px 12px; white-space: nowrap; }
+  .admin-actions .admin-return-link { display: none; }
+  .admin-actions [data-admin-refresh],.admin-actions [data-admin-logout] { margin: 0; }
+  .admin-heading { padding: 22px 0 14px; }
+  .admin-heading h1 { font-size: clamp(26px, 7vw, 34px); line-height: 1.1; }
+  .admin-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
+  .admin-stat { min-width: 0; padding: 14px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); }
+  .admin-stat strong { font-size: clamp(18px, 5vw, 23px); overflow-wrap: anywhere; margin: 3px 0 1px; display: block; }
+  .admin-stat small { font-size: 11px; color: var(--muted); }
+  .admin-stat span { font-size: 10.5px; color: var(--muted); line-height: 1.25; }
+  .admin-panel { min-width: 0; padding: 16px; border-radius: 14px; margin-bottom: 16px; overflow: hidden; }
+  .admin-panel-head { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 11px; min-width: 0; margin-bottom: 14px; }
+  .admin-panel-head > div,.admin-panel-head > label { min-width: 0; max-width: 100%; width: 100%; }
+  .admin-panel-head input { box-sizing: border-box; width: 100%; max-width: 100%; min-height: 44px; }
+  .admin-panel-head > button { min-height: 42px; width: 100%; justify-content: center; }
+  .admin-panel h2 { font-size: 17px; line-height: 1.25; }
+  .admin-panel .nx-table-wrap { width: 100%; max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+  .admin-panel .nx-table { min-width: 640px; }
+  .admin-account-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .admin-account-actions .table-action { flex: 0 0 auto; min-height: 34px; padding: 6px 10px; font-size: 11.5px; font-weight: 600; border-radius: 7px; margin: 0; line-height: 1.2; }
+  .admin-nested-section { padding: 12px; border-radius: 12px; }
+  .admin-nested-section > summary { align-items: flex-start; flex-direction: column; gap: 4px; }
+
+  .admin-nav-backdrop { position: fixed; inset: 0; z-index: 59; display: block; width: 100%; height: 100%; padding: 0; border: 0; background: #05040ad9; opacity: 0; visibility: hidden; }
+  .admin-nav-open .admin-nav-backdrop { opacity: 1; visibility: visible; }
+  .admin-sidebar { position: fixed; inset: 0 auto 0 0; z-index: 61; width: min(310px, 88vw); height: 100dvh; padding: max(18px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom)); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; transform: translateX(-105%); transition: transform .22s ease; }
+  .admin-nav-open .admin-sidebar { transform: translateX(0); }
+  .admin-sidebar[aria-hidden="true"] { visibility: hidden; }
+  .admin-sidebar[aria-hidden="false"],.admin-nav-open .admin-sidebar { visibility: visible; }
+
+  /* Filtros em pílulas roláveis horizontalmente sem quebrar layout */
+  [data-admin-kyc-filters],
+  [data-admin-payout-tabs] {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+    gap: 8px;
+  }
+  [data-admin-kyc-filters]::-webkit-scrollbar,
+  [data-admin-payout-tabs]::-webkit-scrollbar { display: none; }
+  [data-admin-kyc-filters] > button,
+  [data-admin-payout-tabs] > button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  /* Sub-navigation tabs (Custódia & Conciliação) */
+  .admin-subnav { display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; scrollbar-width: none; }
+  .admin-subnav::-webkit-scrollbar { display: none; }
+  .admin-subnav-btn { flex: 0 0 auto; padding: 8px 12px; font-size: 12px; }
+}
+
 @media (max-width: 850px) {
   html { scroll-padding-top: 72px; }
 
@@ -43,24 +116,32 @@
 
   .platform-body .app-main { box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; margin: 0; padding: 20px 16px max(36px, env(safe-area-inset-bottom)); }
   .platform-body .app-header { display: block; min-width: 0; margin-bottom: 20px; }
-  .platform-body .app-header h1 { max-width: 100%; font-size: clamp(27px, 7vw, 34px); line-height: 1.12; overflow-wrap: anywhere; }
+  .platform-body .app-header h1 { max-width: 100%; font-size: clamp(25px, 6.8vw, 33px); line-height: 1.12; overflow-wrap: anywhere; }
   .platform-body .header-actions { display: flex; align-items: stretch; justify-content: flex-start; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
   .platform-body .header-actions > * { min-height: 42px; }
-  .platform-body .header-actions .button-primary { flex: 1 1 100%; justify-content: center; }
-  .platform-body .metric-grid,.platform-body .dashboard-grid,.platform-body .nx-settings,.platform-body .integration-grid,.platform-body .receivable-cards { grid-template-columns: minmax(0, 1fr); }
-  .platform-body .metric-grid .metric-card:last-child { grid-column: auto; }
+  .platform-body .header-actions .button-primary { flex: 1 1 auto; min-width: 160px; justify-content: center; }
+  .platform-body .dashboard-grid,.platform-body .nx-settings,.platform-body .integration-grid,.platform-body .receivable-cards { grid-template-columns: minmax(0, 1fr); }
+  .platform-body .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .platform-body .metric-grid .metric-card:first-child,
+  .platform-body .metric-grid .metric-card.main-metric { grid-column: 1 / -1; }
   .platform-body .metric-card,.platform-body .panel,.platform-body .settings-card,.platform-body .account-card { min-width: 0; max-width: 100%; }
-  .platform-body .metric-card,.platform-body .panel { padding: 16px; }
+  .platform-body .metric-card { min-height: 130px; padding: 16px; }
+  .platform-body .panel { padding: 16px; }
   .platform-body .panel-head { flex-wrap: wrap; gap: 10px; }
   .platform-body .panel-head > label,.platform-body .panel-head > select { max-width: 100%; }
-  .platform-body .nx-toolbar { align-items: stretch; }
-  .platform-body .nx-toolbar .nx-field { flex-basis: 100%; min-width: 0; }
-  .platform-body .view-actions { justify-content: stretch; }
+  .platform-body .nx-view-tabs { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; gap: 4px; }
+  .platform-body .nx-view-tabs::-webkit-scrollbar { display: none; }
+  .platform-body .nx-view-tabs [role="tab"] { flex: 0 0 auto; white-space: nowrap; padding: 10px 12px; font-size: 13.5px; }
+  .platform-body .nx-toolbar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; align-items: end; }
+  .platform-body .nx-toolbar .nx-field:first-child,
+  .platform-body .nx-toolbar > .button { grid-column: 1 / -1; width: 100%; justify-content: center; }
+  .platform-body .nx-toolbar .nx-field { min-width: 0; width: 100%; }
+  .platform-body .view-actions { justify-content: stretch; margin-bottom: 12px; }
   .platform-body .view-actions > * { flex: 1 1 140px; justify-content: center; min-height: 44px; }
   .platform-body .nx-table-wrap { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
-  .platform-body .nx-table { min-width: 620px; }
+  .platform-body .nx-table { min-width: 600px; }
   .platform-body .demo-table { max-width: 100%; overflow-x: auto; }
-  .platform-body .table-head,.platform-body .table-row { min-width: 620px; }
+  .platform-body .table-head,.platform-body .table-row { min-width: 600px; }
 
   /* Mantém o modal dentro do viewport mesmo com teclado virtual e notch. */
   .platform-body .nx-dialog { width: calc(100vw - 20px); max-width: 600px; max-height: calc(100dvh - 20px - env(safe-area-inset-top)); margin: auto; border-radius: 16px; }
@@ -75,46 +156,6 @@
   .platform-body .modal-card,.platform-body .confirm-card { width: min(440px, 100%); max-height: calc(100dvh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); overflow-y: auto; padding: 20px; }
   .platform-body .modal-form-actions,.platform-body .confirm-actions { flex-wrap: wrap; }
   .platform-body .modal-form-actions > .button,.platform-body .confirm-actions > .button { flex: 1 1 130px; min-height: 44px; justify-content: center; }
-
-  /* Painel administrativo: drawer, cabeçalho compacto e rolagem confinada às tabelas. */
-  /* Painel administrativo: drawer, cabeçalho fluido e rolagem confinada às tabelas. */
-  .admin-layout { display: block; min-height: 100dvh; }
-  .admin-main.admin-shell { width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; margin: 0; padding: 0 14px max(32px, env(safe-area-inset-bottom)); }
-  .admin-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; min-height: 0; padding: max(10px, env(safe-area-inset-top)) 0 12px; border-bottom: 1px solid var(--line); }
-  .admin-mobile-menu-toggle { display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--text); cursor: pointer; }
-  .admin-header-title { flex: 1 1 auto; min-width: 0; }
-  .admin-header-title .eyebrow { display: none; }
-  .admin-header-title strong { font-size: 15px; font-weight: 700; overflow-wrap: anywhere; }
-  .admin-actions { display: flex; align-items: center; gap: 8px; width: 100%; margin-top: 2px; }
-  .admin-actions .button { flex: 1 1 auto; min-height: 38px; justify-content: center; font-size: 12px; font-weight: 600; padding: 8px 12px; }
-  .admin-actions .admin-return-link { display: none; }
-  .admin-actions [data-admin-refresh],.admin-actions [data-admin-logout] { margin: 0; }
-  .admin-heading { padding: 22px 0 14px; }
-  .admin-heading h1 { font-size: clamp(26px, 7.5vw, 34px); line-height: 1.1; }
-  .admin-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin-bottom: 16px; }
-  .admin-stat { min-width: 0; padding: 13px 14px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); }
-  .admin-stat strong { font-size: clamp(18px, 5.5vw, 22px); overflow-wrap: anywhere; margin: 3px 0 1px; display: block; }
-  .admin-stat small { font-size: 11px; color: var(--muted); }
-  .admin-stat span { font-size: 10px; color: var(--muted); line-height: 1.25; }
-  .admin-panel { min-width: 0; padding: 14px; border-radius: 14px; margin-bottom: 16px; overflow: hidden; }
-  .admin-panel-head { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 11px; min-width: 0; margin-bottom: 14px; }
-  .admin-panel-head > div,.admin-panel-head > label { min-width: 0; max-width: 100%; width: 100%; }
-  .admin-panel-head input { box-sizing: border-box; width: 100%; min-height: 44px; }
-  .admin-panel-head > button { min-height: 42px; width: 100%; justify-content: center; }
-  .admin-panel h2 { font-size: 17px; line-height: 1.25; }
-  .admin-panel .nx-table-wrap { width: 100%; max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
-  .admin-panel .nx-table { min-width: 680px; }
-  .admin-account-actions { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
-  .admin-account-actions .table-action { flex: 0 0 auto; min-height: 32px; padding: 5px 9px; font-size: 11px; font-weight: 600; border-radius: 7px; margin: 0; line-height: 1.2; }
-  .admin-nested-section { padding: 12px; border-radius: 12px; }
-  .admin-nested-section > summary { align-items: flex-start; flex-direction: column; gap: 4px; }
-
-  .admin-nav-backdrop { position: fixed; inset: 0; z-index: 59; display: block; width: 100%; height: 100%; padding: 0; border: 0; background: #05040ad9; opacity: 0; visibility: hidden; }
-  .admin-nav-open .admin-nav-backdrop { opacity: 1; visibility: visible; }
-  .admin-sidebar { position: fixed; inset: 0 auto 0 0; z-index: 61; width: min(310px, 88vw); height: 100dvh; padding: max(18px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom)); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; transform: translateX(-105%); transition: transform .22s ease; }
-  .admin-nav-open .admin-sidebar { transform: translateX(0); }
-  .admin-sidebar[aria-hidden="true"] { visibility: hidden; }
-  .admin-sidebar[aria-hidden="false"],.admin-nav-open .admin-sidebar { visibility: visible; }
 
   .nx-dialog { width: calc(100vw - 16px); max-height: calc(100dvh - 16px - env(safe-area-inset-top)); border-radius: 16px; margin: auto; }
   .nx-dialog form { padding: 16px; display: flex; flex-direction: column; max-height: calc(100dvh - 20px); }
@@ -141,11 +182,6 @@
   .nx-acquirer-choice:has(input:checked) { border-color: var(--purple, #7c3aed); background: color-mix(in srgb, var(--purple, #7c3aed) 8%, var(--bg)); }
   .nx-acquirer-choice span b { display: block; font-size: 13px; color: var(--text); }
   .nx-acquirer-choice span small { display: block; font-size: 11px; color: var(--muted); line-height: 1.35; margin-top: 2px; }
-
-  /* Sub-navigation tabs (Custódia & Conciliação) */
-  .admin-subnav { display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; scrollbar-width: none; }
-  .admin-subnav::-webkit-scrollbar { display: none; }
-  .admin-subnav-btn { flex: 0 0 auto; padding: 8px 12px; font-size: 12px; }
 }
 
 @media (max-width: 540px) {
@@ -153,8 +189,13 @@
   .platform-body .platform-mobile-header { grid-template-columns: 42px minmax(0, 1fr) 42px; gap: 7px; min-height: 58px; }
   .platform-body .platform-mobile-brand img { width: 112px; }
   html.theme-light .platform-body .platform-mobile-brand img { content: url("logo-nexora-purple.svg"); }
-  .platform-body .metric-card { min-height: 145px; padding: 15px; }
-  .platform-body .metric-card strong { font-size: clamp(22px, 7vw, 28px); }
+  .platform-body .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .platform-body .metric-grid .metric-card:first-child,
+  .platform-body .metric-grid .metric-card.main-metric { grid-column: 1 / -1; }
+  .platform-body .metric-card { min-height: 115px; padding: 14px; }
+  .platform-body .metric-card strong { font-size: clamp(19px, 5.8vw, 25px); }
+  .platform-body .metric-card.main-metric strong { font-size: clamp(24px, 7vw, 30px); }
+  .platform-body .nx-toolbar { grid-template-columns: minmax(0, 1fr); }
   .platform-body .demo-banner { align-items: flex-start; gap: 9px; padding: 12px; }
   .platform-body .demo-banner button { flex: 0 0 auto; margin-left: auto; }
   .admin-main.admin-shell { padding-right: 10px; padding-left: 10px; }
@@ -163,12 +204,12 @@
   .admin-stat strong { font-size: clamp(17px, 5.5vw, 20px); }
   .admin-panel { padding: 12px; border-radius: 12px; }
   .admin-header-title strong { font-size: 14px; }
-  .admin-actions { gap: 6px; }
-  .admin-actions .button { padding: 8px 10px; font-size: 11px; min-height: 36px; }
+  .admin-actions { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
+  .admin-actions .button { flex: 1 1 auto; padding: 8px 10px; font-size: 11.5px; min-height: 38px; justify-content: center; }
   .nx-dialog.admin-review-dialog .kyc-file-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-@media (max-width: 850px) {
+@media (max-width: 900px) {
   .platform-body .app-main input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
   .platform-body .app-main select,
   .platform-body .app-main textarea,
@@ -178,8 +219,10 @@
 }
 
 @media (max-width: 360px) {
+  .platform-body .metric-grid { grid-template-columns: minmax(0, 1fr); }
   .admin-stats { grid-template-columns: minmax(0, 1fr); }
-  .admin-actions { grid-template-columns: 38px minmax(0, 1fr) 50px; }
+  .admin-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+  .admin-actions [data-admin-open-logo-modal] { flex: 1 1 100%; }
   .nx-dialog footer .button { flex-basis: 100%; }
   .nx-dialog.admin-review-dialog .kyc-file-grid { grid-template-columns: minmax(0, 1fr); }
 }

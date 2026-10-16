@@ -1,6 +1,7 @@
 .merchant-payout-panel{margin-top:18px;min-width:0}
-.merchant-payout-panel .panel-head{align-items:flex-start}
-.merchant-payout-panel .panel-head button{flex:0 0 auto}
+.merchant-payout-panel .panel-head{align-items:flex-start;gap:12px;flex-wrap:wrap}
+.merchant-payout-panel .panel-head>div:last-child{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.merchant-payout-panel .panel-head button,.merchant-payout-panel .panel-head .button{flex:0 0 auto}
 .merchant-payout-panel .nx-banner{margin:12px 0 18px}
 .merchant-payout-panel code{overflow-wrap:anywhere;font-size:11px}
-@media(max-width:700px){.merchant-payout-panel .panel-head{flex-direction:column}.merchant-payout-panel .panel-head button{width:100%}.merchant-payout-panel .nx-table-wrap{max-width:100%}}
+@media(max-width:700px){.merchant-payout-panel .panel-head{flex-direction:column;align-items:stretch}.merchant-payout-panel .panel-head>div:last-child{width:100%}.merchant-payout-panel .panel-head>div:last-child>*{flex:1 1 140px;justify-content:center;text-align:center}.merchant-payout-panel .nx-table-wrap{max-width:100%}}

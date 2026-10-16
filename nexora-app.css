@@ -58,8 +58,12 @@ html:not(.theme-light) .outline:hover{background:#7c3aed;color:#ffffff;border-co
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 .platform-body .ledger-balance-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 .platform-body .ledger-balance-grid .metric-card:last-child{grid-column:auto}
-@media(max-width:1000px){.platform-body .ledger-balance-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:850px){.platform-body .ledger-balance-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:1150px){.platform-body .ledger-balance-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:850px){
+  .platform-body .ledger-balance-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .platform-body .ledger-balance-grid .metric-card:first-child,.platform-body .ledger-balance-grid .metric-card.main-metric{grid-column:1/-1}
+}
+@media(max-width:360px){.platform-body .ledger-balance-grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:850px){
   .nx-dialog{width:calc(100vw - 24px);max-height:calc(100dvh - 24px);border-radius:16px}
   .nx-dialog form{padding:18px}
@@ -105,7 +109,8 @@ html.theme-light .platform-body .app-main .header-actions .theme-toggle:focus-vi
 .nx-ledger-movement{display:inline-flex;gap:5px;align-items:center;padding:6px 9px;border:1px solid var(--line);border-radius:999px;background:var(--bg);font-size:12px}
 .nx-ledger-movement.positive b{color:#147a4b}
 .nx-ledger-movement.negative b{color:#b42318}
-@media(max-width:600px){.receipts-summary,.receipts-summary.ledger-statement-cards{grid-template-columns:minmax(0,1fr);gap:10px}.receipts-summary .metric-card{min-height:108px}}
+@media(max-width:600px){.receipts-summary{grid-template-columns:minmax(0,1fr);gap:10px}.receipts-summary.ledger-statement-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.receipts-summary .metric-card{min-height:100px;padding:14px}}
+@media(max-width:360px){.receipts-summary.ledger-statement-cards{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:600px){.nx-ledger-statement{padding:16px}.nx-ledger-statement-row{grid-template-columns:minmax(0,1fr);gap:10px;align-items:flex-start}.nx-ledger-movements{align-items:flex-start}}
 .theme-light .platform-mobile-header{background:var(--bg);border-color:var(--line)}
 @media(max-width:850px){

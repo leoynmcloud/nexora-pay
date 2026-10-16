@@ -37,7 +37,7 @@
       window.nexoraSwitchCustodyTab(alias.tab);
     }
     if (writeHistory && location.hash !== '#' + (alias ? id : page.id)) history.pushState(null, '', '#' + (alias ? id : page.id));
-    window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'auto' });
     if (moveFocus) {
       const heading = page.querySelector('h1,h2');
       if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
@@ -73,9 +73,8 @@
   panel.querySelectorAll('[data-admin-nav]').forEach(link => {
     link.addEventListener('click', event => {
       event.preventDefault();
-      activatePage(link.hash.slice(1), true);
       setOpen(false, false);
-      activatePage(link.hash.slice(1), false, true);
+      activatePage(link.hash.slice(1), true, true);
     });
   });
   document.querySelector('#admin-recent-access [data-recent-links]')?.addEventListener('click', event => {
@@ -83,9 +82,8 @@
     if (!link) return;
     event.preventDefault();
     const id = link.hash.slice(1);
-    activatePage(id, true);
     if (mobile.matches) setOpen(false, false);
-    activatePage(id, false, true);
+    activatePage(id, true, true);
   });
   panel.querySelectorAll('.admin-sidebar-bottom a').forEach(link => link.addEventListener('click', () => {
     if (mobile.matches) setOpen(false, false);

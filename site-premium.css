@@ -1528,3 +1528,18 @@
   .integration-preview .code-body { padding: 14px 12px; font-size: 10px; }
   .code-footer { flex-direction: column; gap: 5px; }
 }
+
+/* ==========================================================================
+   OTIMIZAÇÃO DE RENDERIZAÇÃO (CONTENT-VISIBILITY)
+   ========================================================================== */
+.core-features-section,
+.how-it-works-section,
+.integration-section,
+.pricing-section,
+.security-section,
+.faq-section,
+.cta-banner-section,
+.footer-pro {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
