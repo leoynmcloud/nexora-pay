@@ -33,12 +33,13 @@ async function criarCobrancaPix({ valorReais = 10, descricao = 'Cobrança Pix', 
 
 // Exemplo de uso:
 if (require.main === module) {
-  console.log('Criando link de pagamento Pix de R$ 10,00...');
   criarCobrancaPix({ valorReais: 10, descricao: 'Pagamento Pix R$ 10,00' })
     .then(res => {
+      const link = res.data || res;
       console.log('Link criado com sucesso!');
-      console.log('URL de Checkout:', res.checkout_url);
-      console.log('Expira em:', res.expires_at);
+      console.log('ID do Link:', link.id);
+      console.log('URL de Checkout:', link.checkout_url);
+      console.log('Expira em:', link.expires_at);
     })
     .catch(err => {
       console.error('Falha ao criar cobrança:', err.message);

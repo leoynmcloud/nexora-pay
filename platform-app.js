@@ -975,11 +975,11 @@
   }
   function createMerchantApiKey() {
     const scopeOptions = ['payments:read', 'payments:write'];
-    return UI.modal('Criar chave de API', `<p class="nx-muted">As chaves são segredos de servidor e serão exibidas só uma vez.</p>${field('Nome da chave', '<input name="name" maxlength="80" required placeholder="Integração da loja">')}${field('Ambiente', '<select name="environment"><option value="sandbox">Sandbox</option><option value="production">Produção</option></select>')}<fieldset class="nx-webhook-event"><legend>Escopos</legend>${scopeOptions.map((scope, i) => `<label><input type="checkbox" name="scopes" value="${scope}" ${i === 0 ? 'checked' : ''}> ${scope}</label>`).join('')}</fieldset>`, async modal => {
+    return UI.modal('Criar chave de API', `<p class="nx-muted">As chaves são segredos de servidor e serão exibidas só uma vez.</p>${field('Nome da chave', '<input name="name" maxlength="80" required placeholder="Integração da loja">')}${field('Ambiente', '<select name="environment"><option value="production" selected>Produção</option><option value="sandbox">Sandbox (testes)</option></select>')}<fieldset class="nx-webhook-event"><legend>Escopos</legend>${scopeOptions.map(scope => `<label><input type="checkbox" name="scopes" value="${scope}" checked> ${scope}</label>`).join('')}</fieldset>`, async modal => {
       const data = new FormData(modal.querySelector('form'));
       const scopes = data.getAll('scopes').map(String);
       if (!scopes.length) { UI.toast('Selecione ao menos um escopo.'); return false; }
-      const result = await merchantApiKeyRequest({ action: 'create', business_id: state.business_id, name: String(data.get('name') || '').trim(), environment: String(data.get('environment') || 'sandbox'), scopes });
+      const result = await merchantApiKeyRequest({ action: 'create', business_id: state.business_id, name: String(data.get('name') || '').trim(), environment: String(data.get('environment') || 'production'), scopes });
       await loadMerchantApiKeys();
       modal.querySelector('.nx-dialog-body').innerHTML = `<p class="nx-banner"><b>Copie e guarde agora</b><span>Esta chave não poderá ser consultada novamente.</span></p><label class="nx-field">Chave<textarea data-api-key-secret readonly rows="3" spellcheck="false">${e(result.secret)}</textarea></label><button type="button" class="button outline" data-copy-api-key>Copiar chave</button>`;
       modal.querySelector('[type="submit"]').hidden = true;
