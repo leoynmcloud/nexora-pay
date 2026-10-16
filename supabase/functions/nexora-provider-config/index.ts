@@ -110,6 +110,27 @@ Deno.serve(async (request) => {
         if (code === 'mercadopago_access_token_rejected') return Response.json({ error: 'O Mercado Pago rejeitou o Access Token. Confira a conta e o ambiente selecionados.' }, { status: 422, headers: cors });
         return Response.json({ error: 'Não foi possível validar o Access Token no Mercado Pago agora.' }, { status: 502, headers: cors });
       }
+    } else if (acquirer.code === 'pushinpay_production' && acquirer.environment === 'production') {
+      providerLabel = 'Pushin Pay · produção';
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 10000);
+      let validation: Response;
+      try {
+        validation = await fetch('https://api.pushinpay.com.br/api/transactions', {
+          method: 'GET', signal: controller.signal, redirect: 'error',
+          headers: { Authorization: `Bearer ${apiKey}`, Accept: 'application/json', 'User-Agent': 'NexoraPay/1.0' },
+        });
+      } finally { clearTimeout(timer); }
+      if (validation.status === 401 || validation.status === 403) {
+        await validation.body?.cancel().catch(() => undefined);
+        return Response.json({ error: 'A Pushin Pay rejeitou o token de API. Confira o token informado.' }, { status: 422, headers: cors });
+      }
+      if (!validation.ok && validation.status !== 404) {
+        const httpStatus = validation.status;
+        await validation.body?.cancel().catch(() => undefined);
+        return Response.json({ error: `Não foi possível validar o token na Pushin Pay (HTTP ${httpStatus}).` }, { status: 502, headers: cors });
+      }
+      await validation.body?.cancel().catch(() => undefined);
     } else {
       return Response.json({ error: 'Este adquirente ainda não tem validação segura de credencial configurada.' }, { status: 409, headers: cors });
     }
