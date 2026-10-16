@@ -53,6 +53,7 @@
   async function logout() {
     const { error } = await window.nexoraSupabase.auth.signOut();
     if (error) throw new Error('Não foi possível sair. Tente novamente.');
+    try { sessionStorage.clear(); } catch (_) {}
     window.location.assign('auth.html');
   }
   window.NexoraUI = { toast, modal, confirm, logout };

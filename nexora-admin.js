@@ -979,7 +979,7 @@
     if (!container) return;
 
     const totalCount = kycCases.length;
-    const pendingCount = kycCases.filter(item => ['SUBMITTED','UNDER_REVIEW','MANUAL_REVIEW','PENDING_DOCUMENTS'].includes(item.status)).length;
+    const pendingCount = kycCases.filter(item => ['DRAFT','SUBMITTED','UNDER_REVIEW','MANUAL_REVIEW','PENDING_DOCUMENTS'].includes(item.status)).length;
     const approvedCount = kycCases.filter(item => item.status === 'APPROVED').length;
     const rejectedCount = kycCases.filter(item => ['REJECTED','SUSPENDED','BLOCKED'].includes(item.status)).length;
 
@@ -999,7 +999,7 @@
 
     let filtered = kycCases.slice();
     if (kycFilter === 'pending') {
-      filtered = filtered.filter(item => ['SUBMITTED','UNDER_REVIEW','MANUAL_REVIEW','PENDING_DOCUMENTS'].includes(item.status));
+      filtered = filtered.filter(item => ['DRAFT','SUBMITTED','UNDER_REVIEW','MANUAL_REVIEW','PENDING_DOCUMENTS'].includes(item.status));
     } else if (kycFilter === 'approved') {
       filtered = filtered.filter(item => item.status === 'APPROVED');
     } else if (kycFilter === 'rejected') {
@@ -1026,7 +1026,7 @@
       '<th>Cliente / Empresa</th><th>Documento</th><th>Data de Envio</th><th>Status</th><th>Ação</th>' +
       '</tr></thead><tbody>' + filtered.map(item => {
         const isApproved = item.status === 'APPROVED';
-        const isPending = ['SUBMITTED','UNDER_REVIEW','MANUAL_REVIEW','PENDING_DOCUMENTS'].includes(item.status);
+        const isPending = ['DRAFT','SUBMITTED','UNDER_REVIEW','MANUAL_REVIEW','PENDING_DOCUMENTS'].includes(item.status);
         const docType = (item.data?.company?.document_type || (item.data?.company?.account_type === 'individual' ? 'CPF' : 'CNPJ')).toUpperCase();
         const docNum = item.data?.company?.document_number || 'Não informado';
         const dateStr = C.date(item.submitted_at || item.created_at);
@@ -1168,7 +1168,8 @@
         const {error} = await window.nexoraSupabase.functions.invoke('nexora-email-events', { body: { type: 'kyc_decision', user_id: userId } });
         if (!error) emailSent = true;
       } catch (err) { console.warn('Decisão KYC salva; notificação por e-mail não enviada.', err?.message || ''); }
-      await loadKyc();
+      try { sessionStorage.removeItem(ADMIN_CACHE_KEY); } catch (_) {}
+      await Promise.all([loadKyc(), load()]);
       UI.toast(emailSent ? 'Decisão registrada e aviso enviado por e-mail.' : 'Decisão registrada com sucesso.');
       return true;
     }, { submitLabel: submitBtnLabel, className: 'admin-review-dialog' });
@@ -1245,7 +1246,7 @@
   }
   function renderOverview() {
     if (!data) return;
-    const pending = kycCases.filter(item => ['SUBMITTED','UNDER_REVIEW','MANUAL_REVIEW','PENDING_DOCUMENTS'].includes(item.status)).length;
+    const pending = kycCases.filter(item => ['DRAFT','SUBMITTED','UNDER_REVIEW','MANUAL_REVIEW','PENDING_DOCUMENTS'].includes(item.status)).length;
     const unreadAlerts = alerts.filter(item => !item.read_at).length;
     const setNavCount = (id, count, accessibleLabel) => {
       const link = document.querySelector('[data-admin-nav][href="#' + id + '"]');
@@ -1542,34 +1543,9 @@
         <p data-modal-logo-status style="margin:0;font-size:13px;color:#a78bfa;font-weight:600;"></p>
       </div>
     `;
-    UI.modal('Alterar Logo & Ícone da Aba (Favicon)', body, async modal => {
+    const modalDialog = UI.modal('Alterar Logo & Ícone da Aba (Favicon)', body, async modal => {
       const status = modal.querySelector('[data-modal-logo-status]');
       const fileInput = modal.querySelector('[data-modal-logo-file]');
-      const resetBtn = modal.querySelector('[data-modal-reset-logo]');
-      
-      if (resetBtn) {
-        resetBtn.addEventListener('click', async () => {
-          try {
-            resetBtn.disabled = true;
-            status.textContent = 'Restaurando logo padrão oficial…';
-            await API.rpc('nexora_admin_save_site', { p_content: { logo_url: '' } });
-            window.NexoraSite?.updateCache?.({ logo_url: '' });
-            document.querySelectorAll('.brand-logo-img').forEach(img => {
-              img.src = 'logo-nexora-purple.svg';
-              delete img.dataset.customLogo;
-              img.style.backgroundColor = '#ffffff';
-            });
-            let iconLink = document.querySelector("link[rel*='icon']");
-            if (iconLink) iconLink.href = 'favicon.png';
-            UI.toast('Logo oficial e favicon restaurados com sucesso!');
-            modal.closest('.nx-dialog')?.remove();
-            await load();
-          } catch (err) {
-            status.textContent = 'Erro ao restaurar: ' + API.errorMessage(err);
-            resetBtn.disabled = false;
-          }
-        });
-      }
 
       let logoUrl = String(modal.querySelector('[name=modal_logo_url]').value || '').trim();
       if (fileInput?.files?.[0]) {
@@ -1585,8 +1561,9 @@
       if (!logoUrl) throw new Error('Informe uma URL HTTPS ou envie um arquivo de imagem.');
       if (!logoUrl.startsWith('https://')) throw new Error('A URL da logo deve começar com https://');
       status.textContent = 'Publicando nas configurações…';
-      await API.rpc('nexora_admin_save_site', { p_content: { logo_url: logoUrl } });
+      await API.rpc('nexora_admin_save_site', { p_content: { ...(data?.site || {}), logo_url: logoUrl } });
       window.NexoraSite?.updateCache?.({ logo_url: logoUrl });
+      try { sessionStorage.removeItem(ADMIN_CACHE_KEY); } catch (_) {}
       document.querySelectorAll('.brand-logo-img').forEach(img => {
         img.src = logoUrl;
         img.dataset.customLogo = 'true';
@@ -1602,6 +1579,44 @@
       await load();
       UI.toast('Logo e ícone da aba atualizados com sucesso!');
     }, { submitLabel: 'Salvar e Publicar' });
+
+    const resetBtn = modalDialog?.querySelector('[data-modal-reset-logo]');
+    const fileInput = modalDialog?.querySelector('[data-modal-logo-file]');
+    const previewImg = modalDialog?.querySelector('.brand-logo-preview');
+    const statusEl = modalDialog?.querySelector('[data-modal-logo-status]');
+    if (fileInput && previewImg) {
+      fileInput.addEventListener('change', () => {
+        const file = fileInput.files?.[0];
+        if (file) {
+          previewImg.src = URL.createObjectURL(file);
+        }
+      });
+    }
+    if (resetBtn) {
+      resetBtn.addEventListener('click', async () => {
+        try {
+          resetBtn.disabled = true;
+          if (statusEl) statusEl.textContent = 'Restaurando logo padrão oficial…';
+          await API.rpc('nexora_admin_save_site', { p_content: { ...(data?.site || {}), logo_url: '' } });
+          window.NexoraSite?.updateCache?.({ logo_url: '' });
+          try { sessionStorage.removeItem(ADMIN_CACHE_KEY); } catch (_) {}
+          document.querySelectorAll('.brand-logo-img').forEach(img => {
+            img.src = 'logo-nexora-purple.svg';
+            delete img.dataset.customLogo;
+            img.style.backgroundColor = '#ffffff';
+          });
+          let iconLink = document.querySelector("link[rel*='icon']");
+          if (iconLink) iconLink.href = 'favicon.png';
+          UI.toast('Logo oficial e favicon restaurados com sucesso!');
+          if (typeof modalDialog.close === 'function') modalDialog.close();
+          else modalDialog.remove();
+          await load();
+        } catch (err) {
+          if (statusEl) statusEl.textContent = 'Erro ao restaurar: ' + API.errorMessage(err);
+          resetBtn.disabled = false;
+        }
+      });
+    }
   }
 
   document.addEventListener('click', event => {

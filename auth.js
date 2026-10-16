@@ -142,12 +142,14 @@
   async function routeSignedInUser() {
     const isAdminAccount = await window.NexoraAPI.rpc('is_nexora_super_admin_account');
     if (await startMfaIfRequired(isAdminAccount)) return;
+    try { sessionStorage.clear(); } catch (_) {}
     if (isAdminAccount) {
       location.assign('nexora-admin.html');
     }
     else {
       const access = await window.NexoraAPI.rpc('get_my_access');
-      location.assign(access?.can_access ? 'platform.html' : 'onboarding.html');
+      const needsKycForm = ['DRAFT', 'PENDING_DOCUMENTS', 'REJECTED'].includes(access?.onboarding_status);
+      location.assign((access?.can_access && !needsKycForm) ? 'platform.html' : 'onboarding.html');
     }
   }
   async function startMfaIfRequired(isAdmin = false) {

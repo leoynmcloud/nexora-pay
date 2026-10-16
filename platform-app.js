@@ -21,7 +21,13 @@
     const submitted = ['SUBMITTED','UNDER_REVIEW','MANUAL_REVIEW'].includes(status);
     return `<div class="nx-banner kyc-gate-banner" role="status"><b>${submitted ? 'Cadastro enviado · aguardando análise' : 'Complete o cadastro'}</b><a class="button button-primary compact" href="onboarding.html">${submitted ? 'Acompanhar cadastro' : 'Complete o cadastro'}</a></div>`;
   };
-  const requireKyc = () => { if (canOperate()) return true; UI.toast('Complete o cadastro.'); return false; };
+  const requireKyc = () => {
+    if (canOperate()) return true;
+    const status = window.nexoraAccess?.onboarding_status || 'DRAFT';
+    const submitted = ['SUBMITTED','UNDER_REVIEW','MANUAL_REVIEW'].includes(status);
+    UI.toast(submitted ? 'Seu cadastro está em análise pela equipe da Nexora. Aguarde a aprovação.' : 'Complete o cadastro da empresa para liberar esta função.');
+    return false;
+  };
   const sandboxMode = () => state?.provider?.environment === 'sandbox';
   const paymentsReady = () => canOperate() && state?.provider?.adapter_ready === true
     && ['sandbox', 'production'].includes(state.provider.environment) && state.provider.status === 'active'
@@ -1124,8 +1130,8 @@
         }, 'Remover configuração');
       }
       if (action === 'new-charge') return newRecord(); if (action === 'withdraw') return withdraw(); if (action === 'new-customer') return saveCustomer();
-      if (action === 'clear-filters') { filter = { query: '', status: '', from: '', to: '' }; transactions(); return; }
-      if (action === 'search') { filter = { query: '', status: '', from: '', to: '' }; showView('transacoes'); setTimeout(() => main.querySelector('[data-filter=query]')?.focus(), 0); return; }
+      if (action === 'clear-filters') { filter = { query: '', status: '', from: '', to: '', environment: '', customer_id: '' }; transactions(); return; }
+      if (action === 'search') { filter = { query: '', status: '', from: '', to: '', environment: '', customer_id: '' }; showView('transacoes'); setTimeout(() => main.querySelector('[data-filter=query]')?.focus(), 0); return; }
       if (action === 'notifications') return notifications();
       if (action === 'password') return UI.confirm('Enviar recuperação de senha?', 'Um link será enviado para o e-mail da sua conta.', async () => {
         const { error } = await window.nexoraSupabase.auth.resetPasswordForEmail(window.nexoraSessionUser.email, { redirectTo: `${location.origin}/auth.html?mode=reset` });

@@ -185,7 +185,16 @@
       // Compatibility with the existing get_my_access() function, which copies company.cnpj
       // into businesses.document. The generic document_number remains the canonical UI field.
       data.company.cnpj = data.company.document_number;
-      data.company.trade_name = data.company.legal_name;
+      data.company.trade_name = data.company.trade_name || data.company.legal_name;
+      data.address = {
+        postal_code: data.company.postal_code || '',
+        street: data.company.address_street || '',
+        number: data.company.address_extra || '',
+        neighborhood: data.company.address_neighborhood || '',
+        city: data.company.address_city || '',
+        state: data.company.address_state || '',
+        country: data.company.address_country || 'Brasil'
+      };
       data.representative.full_name = isIndividual ? data.company.legal_name : data.representative.full_name;
       data.representative.cpf = isIndividual ? data.company.document_number : '';
       data.privacy_consent = true;
@@ -218,22 +227,26 @@
       for (const {input,docType,subjectKey} of files) {
         const file = input.files?.[0];
         if (!file) continue;
-        if (!['image/jpeg','image/png','image/webp','application/pdf'].includes(file.type) || file.size > 10 * 1024 * 1024) continue;
+        if (!['image/jpeg','image/png','image/webp','application/pdf'].includes(file.type) || file.size > 10 * 1024 * 1024) {
+          throw new Error('O arquivo "' + file.name + '" não é permitido. Use PDF, JPG, PNG ou WebP de até 10 MB.');
+        }
         const prior = existingDocuments.find(doc => doc.document_type === docType && doc.subject_key === subjectKey && doc.storage_path);
         const ext = ({'image/jpeg':'jpg','image/png':'png','image/webp':'webp','application/pdf':'pdf'})[file.type] || 'pdf';
         const path = user.id + '/' + docType + '/' + crypto.randomUUID() + '.' + ext;
-        try {
-          const {error:uploadError} = await client.storage.from('nexora-kyc').upload(path,file,{contentType:file.type,upsert:false});
-          if (!uploadError) {
-            await client.rpc('nexora_kyc_register_document_v2',{p_document_type:docType,p_subject_key:subjectKey,p_storage_path:path,p_file_name:file.name,p_content_type:file.type,p_size_bytes:file.size});
-            if (prior) await client.storage.from('nexora-kyc').remove([prior.storage_path]);
-            existingDocuments = existingDocuments.filter(doc => doc.document_type !== docType);
-            existingDocuments.push({document_type:docType,subject_key:subjectKey,file_name:file.name,storage_path:path});
-          }
-        } catch (_) {}
+        const {error:uploadError} = await client.storage.from('nexora-kyc').upload(path,file,{contentType:file.type,upsert:false});
+        if (uploadError) throw uploadError;
+        const {error:regError} = await client.rpc('nexora_kyc_register_document_v2',{p_document_type:docType,p_subject_key:subjectKey,p_storage_path:path,p_file_name:file.name,p_content_type:file.type,p_size_bytes:file.size});
+        if (regError) throw regError;
+        if (prior) await client.storage.from('nexora-kyc').remove([prior.storage_path]).catch(() => {});
+        existingDocuments = existingDocuments.filter(doc => !(doc.document_type === docType && doc.subject_key === subjectKey));
+        existingDocuments.push({document_type:docType,subject_key:subjectKey,file_name:file.name,storage_path:path});
       }
       const {data:submitRes,error:submitError} = await client.rpc('nexora_kyc_submit',{p_data:data});
       if (submitError) throw submitError;
+      try {
+        sessionStorage.removeItem(`nexora_access_v1_${user.id}`);
+        sessionStorage.removeItem('nexora_platform_snapshot_v1');
+      } catch (_) {}
       form.hidden = true;
       if (submitRes?.status === 'APPROVED') {
         setStatus('Conta aprovada com sucesso! Abrindo sua operação…','success');
@@ -243,7 +256,7 @@
         setTimeout(() => location.replace('platform.html'), 1500);
       }
     } catch (error) { message(window.NexoraAPI.errorMessage(error)); }
-    finally { submit.disabled = false; submit.innerHTML = 'Enviar cadastro <span aria-hidden="true">→</span>'; }
+    finally { submit.disabled = false; submit.innerHTML = 'Enviar cadastro para análise <span aria-hidden="true">→</span>'; }
   });
   initialize();
 })();

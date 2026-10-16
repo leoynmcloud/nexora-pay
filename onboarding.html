@@ -9,10 +9,10 @@
 </head>
 <body class="auth-body onboarding-body">
   <main class="onboarding-shell">
-    <header class="onboarding-top"><a class="auth-brand" href="index.html"><img class="brand-logo-img" src="logo-nexora-purple.svg" alt="Nexora Pay"></a><button class="button outline compact" type="button" data-kyc-logout>Sair</button></header>
+    <header class="onboarding-top"><a class="auth-brand" href="index.html"><img class="brand-logo-img" src="logo-nexora-purple.svg" alt="Nexora Pay"></a><div style="display:flex;gap:8px;align-items:center;"><a class="button outline compact" href="platform.html">Voltar ao painel</a><button class="button outline compact" type="button" data-kyc-logout>Sair</button></div></header>
     <section class="onboarding-card">
       <div class="onboarding-heading"><span class="eyebrow purple">CONFIGURAÇÃO DE CONTA</span><h1>Ativação da sua conta</h1><p>Preencha os dados básicos para habilitar o recebimento de pagamentos e transferências na sua conta Nexora Pay.</p></div>
-      <p class="kyc-operation-warning"><strong>Ativação rápida e segura:</strong> seus dados são protegidos por criptografia de ponta a ponta para liberar sua operação imediatamente.</p>
+      <p class="kyc-operation-warning"><strong>Ativação segura e auditada:</strong> seus dados são protegidos por criptografia de ponta a ponta e enviados para análise e aprovação da equipe Nexora Pay.</p>
       <div class="kyc-status" data-kyc-status role="status" aria-live="polite">Verificando sua conta…</div>
       <form data-kyc-form hidden>
         <fieldset><legend>Identificação e contato</legend><div class="kyc-grid">
@@ -84,8 +84,8 @@
           <button type="button" class="button outline compact" data-remove-owner>Remover pessoa</button>
         </article></template>
         <label class="kyc-consent"><input name="consent" type="checkbox" required><span>Confirmo que as informações são verdadeiras. Li o <a href="privacidade.html" target="_blank" rel="noopener">aviso de privacidade</a> e declaro a exatidão dos dados fornecidos.</span></label>
-        <p class="kyc-hint">Ao enviar o cadastro, seus dados serão processados para liberação da conta.</p>
-        <button class="button button-primary kyc-submit" type="submit">Salvar e liberar conta <span aria-hidden="true">→</span></button>
+        <p class="kyc-hint">Ao enviar o cadastro, seus dados serão analisados pela equipe da Nexora Pay para liberação da conta.</p>
+        <button class="button button-primary kyc-submit" type="submit">Enviar cadastro para análise <span aria-hidden="true">→</span></button>
         <p class="kyc-form-message" data-kyc-form-message role="alert"></p>
       </form>
     </section>
