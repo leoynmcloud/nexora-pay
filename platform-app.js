@@ -369,27 +369,29 @@
       const rows = state.transactions.filter((item) => Boolean(item.test_mode) === sandboxMode());
       const paid = rows.filter((item) => item.status === 'paid');
       const paidTotal = paid.reduce((sum, item) => sum + C.cents(item.amount), 0) / 100;
+      const isBalanceLoading = loading || !state.ledger_balances;
+      const balanceFallback = isBalanceLoading ? 'Carregando' : 'Indisponível';
       const availableBalance = state.ledger_balances && Number.isFinite(Number(state.ledger_balances.available))
-        ? money(Number(state.ledger_balances.available)) : 'Indisponível';
+        ? money(Number(state.ledger_balances.available)) : balanceFallback;
       const pendingBalance = state.ledger_balances && Number.isFinite(Number(state.ledger_balances.pending))
-        ? money(Number(state.ledger_balances.pending)) : 'Indisponível';
+        ? money(Number(state.ledger_balances.pending)) : balanceFallback;
       const reservedBalance = state.ledger_balances && Number.isFinite(Number(state.ledger_balances.reserved))
-        ? money(Number(state.ledger_balances.reserved)) : 'Indisponível';
+        ? money(Number(state.ledger_balances.reserved)) : balanceFallback;
       const blockedBalance = state.ledger_balances && Number.isFinite(Number(state.ledger_balances.blocked))
-        ? money(Number(state.ledger_balances.blocked)) : 'Indisponível';
+        ? money(Number(state.ledger_balances.blocked)) : balanceFallback;
       const totalLedgerBalance = state.ledger_balances && [
         state.ledger_balances.available, state.ledger_balances.pending,
         state.ledger_balances.reserved, state.ledger_balances.blocked,
       ].every(value => Number.isFinite(Number(value)))
         ? money(['available', 'pending', 'reserved', 'blocked'].reduce((sum, bucket) => sum + Number(state.ledger_balances[bucket]), 0))
-        : 'Indisponível';
+        : balanceFallback;
       const chartRange = state.settings.chart_range || 'Últimos 6 meses';
       const payouts = Array.isArray(state.payout_requests) ? state.payout_requests : [];
       const payoutHistory = state.payout_history_available
         ? (payouts.length ? `<div class="nx-table-wrap"><table class="nx-table"><thead><tr><th>Solicitado</th><th>Identificador</th><th>Valor</th><th>Status</th></tr></thead><tbody>${payouts.slice(0, 10).map(item => `<tr><td>${e(C.date(item.created_at))}</td><td><code>${e(item.payout_id)}</code></td><td>${e(money(Number(item.amount_cents) / 100))}</td><td>${payoutStatus(item)}</td></tr>`).join('')}</tbody></table></div>` : '<p class="nx-empty">Você ainda não tem solicitações de saque.</p>')
-        : '<p class="nx-muted" role="status">Não foi possível consultar o histórico de saques. Atualize a página ou contate o suporte; seus dados e saldo não foram alterados.</p>';
+        : (loading ? '<p class="nx-muted" role="status">Carregando histórico de saques…</p>' : '<p class="nx-muted" role="status">Não foi possível consultar o histórico de saques. Atualize a página ou contate o suporte; seus dados e saldo não foram alterados.</p>');
       main.innerHTML = `<header class="app-header"><div><span class="eyebrow purple">${e(new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }))}</span><h1>${e(greeting)}, ${e(name())}.</h1></div><div class="header-actions"><button class="icon-button" data-action="search" aria-label="Buscar cobrança"><span data-nx-icon="search"></span></button><button class="icon-button" data-action="notifications" aria-label="Notificações${unread ? `: ${unread} não lidas` : ''}"><span data-nx-icon="bell"></span>${unread ? '<i class="nx-unread"></i>' : ''}</button><button class="button button-primary compact" data-action="new-charge" ${paymentsReady() ? '' : 'disabled'}>+ Criar cobrança</button></div></header>
-        <div class="nx-banner"><b>Recebimentos ${paymentsReady() ? 'ativos' : 'indisponíveis'}</b><span>${paymentsReady() ? 'Sua conta pode criar cobranças e acompanhar os pagamentos.' : e(paymentReadinessMessage())}</span></div>
+        <div class="nx-banner"><b>Recebimentos ${paymentsReady() ? 'ativos' : (loading ? 'Carregando' : 'indisponíveis')}</b><span>${paymentsReady() ? 'Sua conta pode criar cobranças e acompanhar os pagamentos.' : (loading ? 'Carregando status dos recebimentos…' : e(paymentReadinessMessage()))}</span></div>
       <section class="metric-grid ledger-balance-grid" aria-label="Resumo do saldo no ledger"><article class="metric-card"><span>Saldo total no ledger</span><strong>${totalLedgerBalance}</strong><small>Soma dos valores pendentes, disponíveis, reservados e bloqueados.</small></article><article class="metric-card main-metric"><span>Saldo disponível</span><strong>${availableBalance}</strong><small>Saldo liberado para saques via Pix.</small></article><article class="metric-card"><span>Aguardando liquidação</span><strong>${pendingBalance}</strong><small>Recebido pelo sistema; a liquidar.</small></article><article class="metric-card"><span>Reservado</span><strong>${reservedBalance}</strong><small>Comprometido com operações ou reserva.</small></article><article class="metric-card"><span>Bloqueado</span><strong>${blockedBalance}</strong><small>Indisponível por análise ou restrição operacional.</small></article><article class="metric-card"><span>Vendas confirmadas</span><strong>${paid.length}</strong><small>${money(paidTotal)} ${sandboxMode() ? '· valores de teste' : '· pagamentos confirmados'}</small></article></section>
         <section class="dashboard-grid"><article class="panel chart-panel"><div class="panel-head"><div><h2>Saldo total da conta</h2><p>Histórico diário calculado pelo ledger: disponível, pendente, reservado e bloqueado.</p></div><label>Período<select data-chart-range>${['Últimos 7 dias', 'Último mês', 'Últimos 6 meses', 'Este ano'].map((label) => `<option ${label === chartRange ? 'selected' : ''}>${label}</option>`).join('')}</select></label></div><div data-chart></div></article><article class="panel recent"><div class="panel-head"><div><h2>Atividade recente</h2><p>Últimos pagamentos consultados</p></div><a href="#transacoes">Ver todas</a></div>${rows.slice(0,5).map((item) => `<button class="nx-activity" data-transaction="${e(item.id)}"><span><b>${e(item.title)}</b><small>${e(item.customer_name || 'Pagador')} · ${e(C.date(item.created_at))}</small></span><strong>${money(item.amount)}</strong>${status(item)}</button>`).join('') || '<p class="nx-empty">Ainda não há cobranças. Crie sua primeira cobrança.</p>'}</article></section>
       <section class="panel merchant-payout-panel" aria-labelledby="merchant-payout-title"><div class="panel-head"><div><h2 id="merchant-payout-title">Saques</h2><p>Solicite uma transferência do saldo disponível e acompanhe o histórico.</p></div><div><a class="button outline compact" href="#saques">Ver histórico completo</a> <button class="button button-primary" type="button" data-action="request-payout">Solicitar saque</button></div></div>${payoutReadinessBanner(state.payout_readiness)}${payoutHistory}</section>`;
@@ -411,6 +413,10 @@
   }
   function renderBalanceHistory(range, history) {
     const chart = main.querySelector('[data-chart]'); if (!chart) return;
+    if (loading || history === null || history === undefined) {
+      chart.innerHTML = '<p class="nx-empty" role="status">Carregando histórico do ledger…</p>';
+      return;
+    }
     const rows = window.NexoraLedgerBalanceHistory?.normalize(history);
     if (!rows) {
       chart.innerHTML = '<p class="nx-empty" role="status">Histórico do ledger indisponível. Verifique a migração de histórico e atualize a página.</p>';
@@ -519,10 +525,12 @@
   function renderStatement() {
     if (statement.businessId && statement.businessId !== state?.business_id) resetStatement();
 
-    const availableVal = state?.ledger_balances && Number.isFinite(Number(state.ledger_balances.available)) ? money(Number(state.ledger_balances.available)) : 'R$ 0,00';
-    const pendingVal = state?.ledger_balances && Number.isFinite(Number(state.ledger_balances.pending)) ? money(Number(state.ledger_balances.pending)) : 'R$ 0,00';
-    const reservedVal = state?.ledger_balances && Number.isFinite(Number(state.ledger_balances.reserved)) ? money(Number(state.ledger_balances.reserved)) : 'R$ 0,00';
-    const blockedVal = state?.ledger_balances && Number.isFinite(Number(state.ledger_balances.blocked)) ? money(Number(state.ledger_balances.blocked)) : 'R$ 0,00';
+    const isLedgerLoading = loading || !state?.ledger_balances;
+    const ledgerFallback = isLedgerLoading ? 'Carregando' : 'R$ 0,00';
+    const availableVal = state?.ledger_balances && Number.isFinite(Number(state.ledger_balances.available)) ? money(Number(state.ledger_balances.available)) : ledgerFallback;
+    const pendingVal = state?.ledger_balances && Number.isFinite(Number(state.ledger_balances.pending)) ? money(Number(state.ledger_balances.pending)) : ledgerFallback;
+    const reservedVal = state?.ledger_balances && Number.isFinite(Number(state.ledger_balances.reserved)) ? money(Number(state.ledger_balances.reserved)) : ledgerFallback;
+    const blockedVal = state?.ledger_balances && Number.isFinite(Number(state.ledger_balances.blocked)) ? money(Number(state.ledger_balances.blocked)) : ledgerFallback;
 
     const balanceCards = `<div class="receipts-summary ledger-statement-cards" style="margin-bottom:18px;">
       <article class="metric-card" style="border-left: 4px solid #10b981;">

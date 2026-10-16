@@ -1216,7 +1216,7 @@
       ['Ticket médio hoje', metricsReady ? C.money(today.average_ticket || 0) : '—', 'Somente pagamentos confirmados']
     ].map(([label,value,note]) => '<article class="admin-stat"><small>' + e(label) + '</small><strong>' + e(value) + '</strong><span>' + e(note) + '</span></article>').join('');
     if (!dashboardMetrics) {
-      const unavailable = '<div class="admin-chart-empty"><span class="admin-chart-empty-icon" aria-hidden="true">↗</span><strong>Indicadores indisponíveis</strong><p>' + e(dashboardMetricsError || 'Carregando indicadores do Supabase…') + '</p></div>';
+      const unavailable = '<div class="admin-chart-empty"><span class="admin-chart-empty-icon" aria-hidden="true">↗</span><strong>' + (dashboardMetricsError ? 'Indicadores indisponíveis' : 'Carregando') + '</strong><p>' + e(dashboardMetricsError || 'Carregando indicadores do Supabase…') + '</p></div>';
       volumeChart.innerHTML = unavailable;
       methodChart.innerHTML = unavailable;
       return;
