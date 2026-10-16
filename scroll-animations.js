@@ -14,6 +14,11 @@
       if (entry.isIntersecting) {
         entry.target.classList.add('is-visible');
         observer.unobserve(entry.target);
+        setTimeout(() => {
+          if (entry.target && entry.target.style) {
+            entry.target.style.willChange = 'auto';
+          }
+        }, 850);
       }
     });
   }, { threshold: 0.1 });

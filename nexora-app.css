@@ -11,7 +11,7 @@ html:not(.theme-light) .outline:hover{background:#7c3aed;color:#ffffff;border-co
 .button-primary:hover,.button:not(.outline):not(.danger):not(.nx-close):not(.nx-cancel):hover{background:#6d28d9;color:#ffffff;transform:translateY(-1px)}
 .nx-dialog{width:min(600px,calc(100vw - 28px));max-height:calc(100dvh - 32px);padding:0;color:var(--text);border:1px solid var(--line);border-radius:20px;background:var(--panel);box-shadow:0 30px 90px #0009;overflow:hidden}
 .nx-dialog[open]{display:flex;flex-direction:column}
-.nx-dialog::backdrop{background:#06060bc9;backdrop-filter:blur(5px)}
+.nx-dialog::backdrop{background:#06060bc9;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
 .nx-dialog form{display:flex;flex:1;flex-direction:column;min-height:0;margin:0;padding:24px;overflow:hidden}.nx-dialog header{display:flex;flex:none;align-items:flex-start;gap:16px;justify-content:space-between;margin-bottom:16px}.nx-dialog h2{font-family:'Space Grotesk',sans-serif;font-size:24px;margin:0;line-height:1.2}.nx-dialog-body{min-height:0;overflow:auto;overscroll-behavior:contain;padding:1px 2px 8px}
 .nx-close{border:1px solid var(--line);width:36px;height:36px;border-radius:9px;background:transparent;color:var(--text);font-size:24px;flex:none}
 .nx-dialog footer{display:flex;flex:none;justify-content:flex-end;gap:12px;margin-top:16px;padding-top:12px;flex-wrap:wrap;border-top:1px solid var(--line)}
@@ -117,7 +117,7 @@ html.theme-light .platform-body .app-main .header-actions .theme-toggle:focus-vi
   .platform-body .app-shell{display:block;min-height:100dvh}
   .platform-body .platform-mobile-header{position:sticky;top:0;z-index:15;display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:12px;min-height:68px;padding:10px 16px;background:var(--bg);border-bottom:1px solid var(--line)}
   .platform-body #platformNavDrawer.platform-drawer[open]{position:fixed;inset:0 auto 0 0;z-index:50;display:block;width:min(320px,88vw);height:100dvh;max-width:min(320px,88vw);max-height:100dvh;margin:0;padding:0;overflow:hidden;border:0;border-radius:0;background:var(--panel);color:var(--text)}
-  .platform-body #platformNavDrawer.platform-drawer::backdrop{background:#05050acc;backdrop-filter:blur(3px)}
+  .platform-body #platformNavDrawer.platform-drawer::backdrop{background:#05050acc;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
   .platform-body .platform-drawer .sidebar{position:relative;inset:auto;width:100%;height:100%;min-height:100%;padding:18px 16px;display:flex;overflow-x:hidden;overflow-y:auto;border:0;background:var(--panel)}
   .platform-body .platform-drawer .platform-drawer-close{display:grid;align-self:flex-end;margin:0 0 10px}
   .platform-body .platform-drawer .sidebar .brand{align-self:flex-start;padding:0 6px 8px!important}

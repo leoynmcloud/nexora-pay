@@ -38,7 +38,8 @@
   position: absolute;
   right: -40px;
   top: 48%;
-  transform: translateY(-50%);
+  -webkit-transform: translateY(-50%) translateZ(0);
+  transform: translateY(-50%) translateZ(0);
   width: min(780px, 62vw);
   height: min(780px, 62vw);
   pointer-events: none;
@@ -58,6 +59,8 @@
   width: 100%;
   height: 100%;
   display: block;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .hero-earth-video {
@@ -521,6 +524,7 @@
   border-radius: 12px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: 3;
   display: flex;
   align-items: center;
@@ -1297,6 +1301,7 @@
 .lead-modal::backdrop {
   background: rgba(4, 4, 8, 0.75);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .lead-modal-card {

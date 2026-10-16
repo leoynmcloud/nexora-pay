@@ -6,6 +6,7 @@
 .scroll-reveal {
   opacity: 0;
   transform: translateY(24px);
+  -webkit-transform: translateY(24px);
   transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms),
               transform 0.75s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms);
   will-change: opacity, transform;
@@ -14,6 +15,8 @@
 .scroll-reveal.is-visible {
   opacity: 1;
   transform: translateY(0);
+  -webkit-transform: translateY(0);
+  will-change: auto;
 }
 
 /* Floating animation for badge and pills */

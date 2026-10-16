@@ -5,7 +5,30 @@
 (function () {
   'use strict';
 
+  // Detect Safari / WebKit engine (where transparent WebM decoding lacks hardware acceleration and causes 100% CPU lock)
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent) ||
+                   (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) ||
+                   (typeof navigator.vendor === 'string' && navigator.vendor.indexOf('Apple') > -1);
+
   const video = document.getElementById('hero-earth-video');
+  const canvas = document.getElementById('hero-globe-canvas');
+  let canvasInitialized = false;
+
+  // On Safari, bypass the heavy transparent WebM video to achieve silky-smooth 60 FPS scrolling
+  if (isSafari && video) {
+    try {
+      video.pause();
+      video.style.display = 'none';
+      video.removeAttribute('src');
+      video.load();
+    } catch (_) {}
+    if (canvas) {
+      canvas.style.display = 'block';
+    }
+    initCanvasGlobe();
+    return;
+  }
+
   if (video) {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const hero = video.closest('.hero-globe-wrap');
@@ -34,14 +57,32 @@
     }
     document.addEventListener('visibilitychange', syncPlayback);
     syncPlayback();
+
+    video.addEventListener('error', () => {
+      video.style.display = 'none';
+      if (canvas) {
+        canvas.style.display = 'block';
+        initCanvasGlobe();
+      }
+    });
+
     return;
   }
 
-  const canvas = document.getElementById('hero-globe-canvas');
-  if (!canvas) return;
+  // If no video tag, start canvas directly
+  if (canvas) {
+    canvas.style.display = 'block';
+    initCanvasGlobe();
+  }
 
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
+  function initCanvasGlobe() {
+    if (canvasInitialized) return;
+    const canvas = document.getElementById('hero-globe-canvas');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    canvasInitialized = true;
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -381,5 +422,6 @@
     isVisible = !document.hidden;
   });
 
-  render();
+    render();
+  }
 })();

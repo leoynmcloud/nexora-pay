@@ -229,6 +229,9 @@ html.theme-light,
 .theme-light .nav {
   background: rgba(248, 250, 252, 0.88) !important;
   backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
   border-bottom: 1px solid #e2e8f0 !important;
 }
 .theme-light .nav-links a {
@@ -332,6 +335,9 @@ html.theme-light,
 .theme-light .mobile-menu {
   background: rgba(255, 255, 255, 0.98) !important;
   backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
   color: #0f172a !important;
 }
 .theme-light .mobile-menu a {
