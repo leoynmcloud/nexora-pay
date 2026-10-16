@@ -246,6 +246,7 @@
       try {
         sessionStorage.removeItem(`nexora_access_v1_${user.id}`);
         sessionStorage.removeItem('nexora_platform_snapshot_v1');
+        sessionStorage.removeItem(`nexora_cached_state_${user.id}`);
       } catch (_) {}
       form.hidden = true;
       if (submitRes?.status === 'APPROVED') {
