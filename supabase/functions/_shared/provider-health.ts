@@ -26,6 +26,14 @@ export function providerHealthEndpoint(
     return expectedCode && code === expectedCode && apiBaseUrl === 'https://api.mercadopago.com'
       ? 'https://api.mercadopago.com/users/me' : null;
   }
+  if (adapter === 'pushinpay') {
+    return environment === 'production' && code === 'pushinpay_production' && apiBaseUrl === 'https://api.pushinpay.com.br/api'
+      ? 'https://api.pushinpay.com.br/api/transactions' : null;
+  }
+  if (adapter === 'orusprime') {
+    return environment === 'production' && code === 'orusprime_production' && apiBaseUrl === 'https://app.orusprime.com.br/api/v1'
+      ? 'https://app.orusprime.com.br/api/v1/gateway/transactions?id=health-check' : null;
+  }
   return null;
 }
 
@@ -34,6 +42,7 @@ export function classifyProviderHealth(
   httpStatus: number | null,
   latencyMs: number | null,
   networkError = false,
+  adapter?: string,
 ): ProviderHealthResult {
   const validLatency = Number.isSafeInteger(latencyMs) && Number(latencyMs) >= 0 && Number(latencyMs) <= 60_000
     ? Number(latencyMs) : null;
@@ -43,9 +52,10 @@ export function classifyProviderHealth(
   if (networkError || httpStatus === null) {
     return { status: 'OFFLINE', latencyMs: validLatency, httpStatus: null, errorCode: 'network_unavailable' };
   }
-  if (httpStatus >= 200 && httpStatus < 300) {
+  if ((httpStatus >= 200 && httpStatus < 300) || (adapter === 'orusprime' && httpStatus === 404)) {
     const slow = validLatency === null || validLatency > 2_000;
-    return { status: slow ? 'DEGRADED' : 'ONLINE', latencyMs: validLatency, httpStatus, errorCode: slow ? 'provider_slow' : null };
+    const effectiveStatus = (adapter === 'orusprime' && httpStatus === 404) ? 200 : httpStatus;
+    return { status: slow ? 'DEGRADED' : 'ONLINE', latencyMs: validLatency, httpStatus: effectiveStatus, errorCode: slow ? 'provider_slow' : null };
   }
   if (httpStatus === 401 || httpStatus === 403) {
     return { status: 'DEGRADED', latencyMs: validLatency, httpStatus, errorCode: 'credential_rejected' };
@@ -58,3 +68,4 @@ export function classifyProviderHealth(
   }
   return { status: 'DEGRADED', latencyMs: validLatency, httpStatus, errorCode: 'provider_probe_rejected' };
 }
+

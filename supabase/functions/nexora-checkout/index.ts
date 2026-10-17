@@ -190,24 +190,27 @@ async function saveMercadoPagoResult(admin: any, attempt: any, result: Awaited<R
 
 async function recoverMercadoPagoPayment(admin: any, transactionId: string) {
   const { data: attempt, error } = await admin.from('nexora_payment_attempts')
-    .select('id,transaction_id,provider_code,environment,external_reference,provider_transaction_id,platform_credential_id,acquirer_id,payment_method')
+    .select('id,transaction_id,provider_code,environment,external_reference,provider_transaction_id,platform_credential_id,acquirer_id')
     .eq('transaction_id', transactionId).maybeSingle();
-  if (error || !attempt || !attempt.provider_code?.startsWith('mercadopago_') || attempt.environment !== 'production') return null;
-  const { data: credentialRow } = await admin.from('nexora_platform_provider_credentials')
+  if (error || !attempt) throw new Error('recover: attempt lookup failed: ' + (error?.message || 'null'));
+  if (!attempt.provider_code?.startsWith('mercadopago_')) throw new Error('recover: provider_code mismatch: ' + attempt.provider_code);
+  if (attempt.environment !== 'production') throw new Error('recover: environment mismatch: ' + attempt.environment);
+  const { data: credentialRow, error: credError } = await admin.from('nexora_platform_provider_credentials')
     .select('api_key_ciphertext').eq('id', attempt.platform_credential_id).maybeSingle();
+  if (credError || !credentialRow?.api_key_ciphertext) throw new Error('recover: credential lookup failed: ' + (credError?.message || 'null'));
   const encryptionSecret = Deno.env.get('NEXORA_CREDENTIALS_ENCRYPTION_KEY') || '';
-  if (!credentialRow?.api_key_ciphertext || !encryptionSecret) return null;
+  if (!encryptionSecret) throw new Error('recover: encryption secret missing');
   const accessToken = await decryptProviderCredential(credentialRow.api_key_ciphertext, encryptionSecret);
-  if (!accessToken.startsWith('APP_USR-')) throw new Error('stored_key_environment_mismatch');
+  if (!accessToken.startsWith('APP_USR-')) throw new Error('recover: stored_key_environment_mismatch: prefix ' + accessToken.slice(0, 8));
   const { data: transaction, error: transactionError } = await admin.from('nexora_transactions')
     .select('amount').eq('id', transactionId).maybeSingle();
-  if (transactionError || !transaction) return null;
+  if (transactionError || !transaction) throw new Error('recover: transaction lookup failed: ' + (transactionError?.message || 'null'));
   const result = attempt.provider_transaction_id
     ? await getMercadoPagoPixPayment(accessToken,attempt.provider_transaction_id,
       attempt.external_reference,Math.round(Number(transaction.amount)*100))
     : await findMercadoPagoPixPaymentByReference(accessToken,attempt.external_reference,
       Math.round(Number(transaction.amount)*100));
-  if (!result) return null;
+  if (!result) throw new Error('recover: provider result was null');
   const saved = await saveMercadoPagoResult(admin, { ...attempt, attempt_id: attempt.id }, result);
   if (result.status === 'SUCCEEDED' && result.providerTransactionId) {
     try {
@@ -413,7 +416,7 @@ async function savePushinPayResult(admin: any, attempt: any, result: Awaited<Ret
 
 async function recoverPushinPayPayment(admin: any, transactionId: string) {
   const { data: attempt, error } = await admin.from('nexora_payment_attempts')
-    .select('id,transaction_id,provider_code,environment,external_reference,provider_transaction_id,platform_credential_id,acquirer_id,payment_method')
+    .select('id,transaction_id,provider_code,environment,external_reference,provider_transaction_id,platform_credential_id,acquirer_id')
     .eq('transaction_id', transactionId).maybeSingle();
   if (error || !attempt || attempt.provider_code !== 'pushinpay_production' || attempt.environment !== 'production') return null;
   const { data: credentialRow } = await admin.from('nexora_platform_provider_credentials')
@@ -574,7 +577,7 @@ async function saveOrusPrimeResult(admin: any, attempt: any, result: OrusPrimeNo
 
 async function recoverOrusPrimePayment(admin: any, transactionId: string) {
   const { data: attempt, error } = await admin.from('nexora_payment_attempts')
-    .select('id,transaction_id,provider_code,environment,external_reference,provider_transaction_id,platform_credential_id,acquirer_id,payment_method')
+    .select('id,transaction_id,provider_code,environment,external_reference,provider_transaction_id,platform_credential_id,acquirer_id')
     .eq('transaction_id', transactionId).maybeSingle();
   if (error || !attempt || attempt.provider_code !== 'orusprime_production' || attempt.environment !== 'production') return null;
   const { data: credentialRow } = await admin.from('nexora_platform_provider_credentials')
@@ -1084,6 +1087,22 @@ Deno.serve(async (request) => {
     }
 
     const admin = makeAdmin();
+    if (input.action === 'recover') {
+      const txId = String(input.transaction_id || '');
+      if (!/^[0-9a-f-]{36}$/i.test(txId)) return response(request, { error: 'transaction_id_invalid' }, 400);
+
+      try {
+        const { data: attempt, error: attemptError } = await admin.from('nexora_payment_attempts')
+          .select('id,provider_code,environment,external_reference,provider_transaction_id,platform_credential_id').eq('transaction_id', txId).maybeSingle();
+        if (attemptError || !attempt) return response(request, { ok: false, error: 'attempt_not_found', attemptError }, 404);
+        
+        const recovered = await recoverPublicPayment(admin, txId);
+        return response(request, { ok: true, attempt, recovered }, 200);
+      } catch (err) {
+        return response(request, { ok: false, error: err instanceof Error ? err.message : String(err) }, 200);
+      }
+    }
+
     if (input.action === 'view') {
       const tokenHash = await publicCheckoutTokenHash(input.token);
       if (!tokenHash) return response(request, { error: 'Link de pagamento inválido.' }, 400);
@@ -1104,6 +1123,20 @@ Deno.serve(async (request) => {
           if (childSnap && (childSnap.parent_link_id === data.id || childSnap.id === data.id)) {
             activeSnapshot = childSnap;
             orderTokenStr = input.order_token;
+          }
+        }
+      } else if (!data.parent_link_id && !data.transaction_id) {
+        const { data: latestChild } = await admin.from('nexora_checkout_links')
+          .select('token_hash')
+          .eq('parent_link_id', data.id)
+          .in('status', ['processing', 'paid'])
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (latestChild?.token_hash) {
+          const { data: childSnap } = await admin.rpc('nexora_checkout_public_snapshot', { p_token_hash: latestChild.token_hash });
+          if (childSnap) {
+            activeSnapshot = childSnap;
           }
         }
       }

@@ -6,6 +6,7 @@ import {
 import { readBoundedHttpBody } from './bounded-http-body.ts';
 import { normalizeCheckoutPayer } from './hosted-checkout.ts';
 import { decryptProviderCredential } from './provider-credentials.ts';
+import { processOrusPrimePaymentWebhook } from './orusprime-webhook-core.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -81,8 +82,25 @@ async function loadCredential(admin: ReturnType<typeof createClient>, acquirerId
 async function saveOrRecover(admin: ReturnType<typeof createClient>, attempt: Record<string, any>, credentialsInput: string) {
   if (!attempt.provider_transaction_id) return null;
   const result = await getOrusPrimeTransaction(credentialsInput, String(attempt.provider_transaction_id));
-  return result ? persistResult(admin, attempt, result) : null;
+  if (!result) return null;
+  const saved = await persistResult(admin, attempt, result);
+  if (result.status === 'SUCCEEDED' && result.providerTransactionId) {
+    try {
+      await processOrusPrimePaymentWebhook(admin, {
+        eventId: `refresh:${result.providerTransactionId}`,
+        eventType: 'payment.completed',
+        providerTransactionId: result.providerTransactionId,
+        credentials: credentialsInput,
+      });
+    } catch (error) {
+      console.error('orusprime_refresh_confirm_deferred', JSON.stringify({
+        code: error instanceof Error ? error.message : 'confirm_failed',
+      }));
+    }
+  }
+  return saved;
 }
+
 
 /** Orus Prime implementation of the authenticated payment endpoint contract. */
 export async function handleOrusPrimePaymentRequest(request: Request, sandboxOnly = false) {

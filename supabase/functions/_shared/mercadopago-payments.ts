@@ -9,6 +9,7 @@ import { validateMercadoPagoAccessToken } from './mercadopago-credentials.ts';
 import { readBoundedHttpBody } from './bounded-http-body.ts';
 import { normalizeCheckoutPayer } from './hosted-checkout.ts';
 import { decryptProviderCredential } from './provider-credentials.ts';
+import { processMercadoPagoPaymentWebhook } from './mercadopago-webhook-core.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -92,8 +93,25 @@ async function saveOrRecover(admin: ReturnType<typeof createClient>, attempt: Re
   const result = attempt.provider_transaction_id
     ? await getMercadoPagoPixPayment(accessToken, String(attempt.provider_transaction_id), String(attempt.external_reference), amountCents)
     : await findMercadoPagoPixPaymentByReference(accessToken, String(attempt.external_reference), amountCents);
-  return result ? persistResult(admin, attempt, result) : null;
+  if (!result) return null;
+  const saved = await persistResult(admin, attempt, result);
+  if (result.status === 'SUCCEEDED' && result.providerTransactionId) {
+    try {
+      await processMercadoPagoPaymentWebhook(admin, {
+        eventId: `refresh:${result.providerTransactionId}`,
+        eventType: 'payment.updated',
+        providerTransactionId: result.providerTransactionId,
+        accessToken,
+      });
+    } catch (error) {
+      console.error('mercadopago_refresh_confirm_deferred', JSON.stringify({
+        code: error instanceof Error ? error.message : 'confirm_failed',
+      }));
+    }
+  }
+  return saved;
 }
+
 
 /** Mercado Pago implementation of the same authenticated payment endpoint contract. */
 export async function handleMercadoPagoPaymentRequest(request: Request, sandboxOnly = false) {

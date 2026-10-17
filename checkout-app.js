@@ -4,7 +4,8 @@
   const token = new URLSearchParams(location.hash.startsWith('#') ? location.hash.slice(1) : location.hash).get('token')
     || new URLSearchParams(location.search).get('token') || '';
   let orderToken = new URLSearchParams(location.hash.startsWith('#') ? location.hash.slice(1) : location.hash).get('order')
-    || new URLSearchParams(location.search).get('order') || '';
+    || new URLSearchParams(location.search).get('order')
+    || (token ? (sessionStorage.getItem('nx_order_' + token) || '') : '') || '';
   const config = window.NEXORA_SUPABASE_CONFIG;
   const safe = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[char]));
   const money = cents => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(cents) / 100);
@@ -201,6 +202,7 @@
       target.setAttribute('aria-busy', 'false');
       target.querySelector('[data-new-payment]')?.addEventListener('click', () => {
         orderToken = '';
+        if (token) sessionStorage.removeItem('nx_order_' + token);
         history.replaceState(null, '', '#token=' + encodeURIComponent(token));
         snapshot = null;
         load();
@@ -214,11 +216,13 @@
       target.innerHTML = failedPaymentMarkup(data, view);
       target.querySelector('[data-retry-card]')?.addEventListener('click', () => {
         orderToken = '';
+        if (token) sessionStorage.removeItem('nx_order_' + token);
         history.replaceState(null, '', '#token=' + encodeURIComponent(token));
         renderForm({ defaultMethod: 'credit_card' });
       });
       target.querySelector('[data-retry-pix]')?.addEventListener('click', () => {
         orderToken = '';
+        if (token) sessionStorage.removeItem('nx_order_' + token);
         history.replaceState(null, '', '#token=' + encodeURIComponent(token));
         renderForm({ defaultMethod: 'pix' });
       });
@@ -261,6 +265,7 @@
       snapshot = await invoke({ action: 'view', token, ...(orderToken ? { order_token: orderToken } : {}) });
       if (snapshot.order_token) {
         orderToken = snapshot.order_token;
+        if (token) sessionStorage.setItem('nx_order_' + token, orderToken);
       }
       if (snapshot.status === 'expired') {
         if (orderToken) {
@@ -477,6 +482,7 @@
         });
         if (result.order_token) {
           orderToken = result.order_token;
+          if (token) sessionStorage.setItem('nx_order_' + token, orderToken);
           const hash = `#token=${encodeURIComponent(token)}&order=${encodeURIComponent(orderToken)}`;
           if (location.hash !== hash) {
             history.replaceState(null, '', hash);

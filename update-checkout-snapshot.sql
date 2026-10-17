@@ -21,6 +21,7 @@ begin
   select b.name into v_business_name from public.businesses b where b.id=v_link.business_id;
   return jsonb_build_object(
     'id',v_link.id,
+    'parent_link_id',v_link.parent_link_id,
     'transaction_id',v_link.transaction_id,
     'status',v_link.status,
     'amount_cents',v_link.amount_cents,

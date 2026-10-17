@@ -6,6 +6,7 @@ import {
 import { readBoundedHttpBody } from './bounded-http-body.ts';
 import { normalizeCheckoutPayer } from './hosted-checkout.ts';
 import { decryptProviderCredential } from './provider-credentials.ts';
+import { processPushinPayPaymentWebhook } from './pushinpay-webhook-core.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -88,8 +89,25 @@ async function loadCredential(admin: ReturnType<typeof createClient>, acquirerId
 async function saveOrRecover(admin: ReturnType<typeof createClient>, attempt: Record<string, any>, apiKey: string) {
   if (!attempt.provider_transaction_id) return null;
   const result = await getPushinPayTransaction(apiKey, String(attempt.provider_transaction_id));
-  return result ? persistResult(admin, attempt, result) : null;
+  if (!result) return null;
+  const saved = await persistResult(admin, attempt, result);
+  if (result.status === 'SUCCEEDED' && result.providerTransactionId) {
+    try {
+      await processPushinPayPaymentWebhook(admin, {
+        eventId: `refresh:${result.providerTransactionId}`,
+        eventType: 'payment.completed',
+        providerTransactionId: result.providerTransactionId,
+        apiKey,
+      });
+    } catch (error) {
+      console.error('pushinpay_refresh_confirm_deferred', JSON.stringify({
+        code: error instanceof Error ? error.message : 'confirm_failed',
+      }));
+    }
+  }
+  return saved;
 }
+
 
 /** Pushin Pay implementation of the authenticated payment endpoint contract. */
 export async function handlePushinPayPaymentRequest(request: Request, sandboxOnly = false) {

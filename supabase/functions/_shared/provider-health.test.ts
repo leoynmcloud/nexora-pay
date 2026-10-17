@@ -12,11 +12,17 @@ describe('fixed provider health endpoints', () => {
       'https://api.mercadopago.com/users/me');
     assert.equal(providerHealthEndpoint('mercadopago', 'mercadopago_sandbox', 'sandbox', 'https://api.mercadopago.com'),
       'https://api.mercadopago.com/users/me');
+    assert.equal(providerHealthEndpoint('pushinpay', 'pushinpay_production', 'production', 'https://api.pushinpay.com.br/api'),
+      'https://api.pushinpay.com.br/api/transactions');
+    assert.equal(providerHealthEndpoint('orusprime', 'orusprime_production', 'production', 'https://app.orusprime.com.br/api/v1'),
+      'https://app.orusprime.com.br/api/v1/gateway/transactions?id=health-check');
   });
 
   it('rejects unknown adapters, mismatched environments, and arbitrary API hosts', () => {
     assert.equal(providerHealthEndpoint('mercadopago', 'mercadopago_production', 'sandbox', 'https://api.mercadopago.com'), null);
     assert.equal(providerHealthEndpoint('asaas', 'asaas_production', 'production', 'https://attacker.example'), null);
+    assert.equal(providerHealthEndpoint('pushinpay', 'pushinpay_production', 'production', 'https://attacker.example'), null);
+    assert.equal(providerHealthEndpoint('orusprime', 'orusprime_production', 'production', 'https://attacker.example'), null);
     assert.equal(providerHealthEndpoint('other', 'other_production', 'production', 'https://attacker.example'), null);
   });
 });
@@ -24,6 +30,9 @@ describe('fixed provider health endpoints', () => {
 describe('provider health probe classification', () => {
   it('marks fast successful probes online and slow ones degraded', () => {
     assert.deepEqual(classifyProviderHealth(200, 250), {
+      status: 'ONLINE', latencyMs: 250, httpStatus: 200, errorCode: null,
+    });
+    assert.deepEqual(classifyProviderHealth(404, 250, false, 'orusprime'), {
       status: 'ONLINE', latencyMs: 250, httpStatus: 200, errorCode: null,
     });
     assert.deepEqual(classifyProviderHealth(204, 2_001), {

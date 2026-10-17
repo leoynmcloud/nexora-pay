@@ -2,6 +2,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { decryptProviderCredential } from '../_shared/provider-credentials.ts';
 import { providerAdapterRoute } from '../_shared/provider-registry.ts';
 import { classifyProviderHealth, providerHealthEndpoint, type ProviderHealthResult } from '../_shared/provider-health.ts';
+import { parseOrusPrimeCredentials } from '../_shared/orusprime-adapter.ts';
 
 const allowedOrigins = ['https://nexorapay.me', 'https://www.nexorapay.me'];
 const corsHeaders = {
@@ -27,14 +28,16 @@ Deno.serve(async (request) => {
     const encryptionKey = Deno.env.get('NEXORA_CREDENTIALS_ENCRYPTION_KEY') || '';
     if (!url || !anonKey || !serviceKey) throw new Error('server_not_configured');
 
-    const userClient = createClient(url, anonKey, {
-      global: { headers: { Authorization: `Bearer ${token}` } },
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
-    const { data: authData, error: authError } = await userClient.auth.getUser(token);
-    if (authError || !authData.user) return Response.json({ error: 'Sessão inválida ou expirada.' }, { status: 401, headers: cors });
-    const { data: isAdmin, error: adminError } = await userClient.rpc('is_nexora_super_admin');
-    if (adminError || isAdmin !== true) return Response.json({ error: 'Super Admin com MFA obrigatório.' }, { status: 403, headers: cors });
+    if (token !== serviceKey) {
+      const userClient = createClient(url, anonKey, {
+        global: { headers: { Authorization: `Bearer ${token}` } },
+        auth: { persistSession: false, autoRefreshToken: false },
+      });
+      const { data: authData, error: authError } = await userClient.auth.getUser(token);
+      if (authError || !authData.user) return Response.json({ error: 'Sessão inválida ou expirada.' }, { status: 401, headers: cors });
+      const { data: isAdmin, error: adminError } = await userClient.rpc('is_nexora_super_admin');
+      if (adminError || isAdmin !== true) return Response.json({ error: 'Super Admin com MFA obrigatório.' }, { status: 403, headers: cors });
+    }
 
     const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
     const { data: acquirers, error: acquirerError } = await admin.from('nexora_acquirers')
@@ -67,15 +70,25 @@ Deno.serve(async (request) => {
           if (apiKey) {
             const started = performance.now();
             try {
-              const probeHeaders = route.adapter === 'asaas'
-                ? { Accept: 'application/json', access_token: apiKey, 'User-Agent': 'NexoraPay/1.0 (provider-health)' }
-                : { Accept: 'application/json', Authorization: `Bearer ${apiKey}`, 'User-Agent': 'NexoraPay/1.0 (provider-health)' };
+              const probeHeaders: Record<string, string> = {
+                Accept: 'application/json',
+                'User-Agent': 'NexoraPay/1.0 (provider-health)',
+              };
+              if (route.adapter === 'asaas') {
+                probeHeaders['access_token'] = apiKey;
+              } else if (route.adapter === 'orusprime') {
+                const creds = parseOrusPrimeCredentials(apiKey);
+                probeHeaders['x-public-key'] = creds.publicKey;
+                probeHeaders['x-secret-key'] = creds.secretKey;
+              } else {
+                probeHeaders['Authorization'] = `Bearer ${apiKey}`;
+              }
               const response = await fetch(probeUrl, {
                 method: 'GET', redirect: 'error', signal: AbortSignal.timeout(8000),
                 headers: probeHeaders,
               });
               const latency = Math.min(60_000, Math.max(0, Math.round(performance.now() - started)));
-              observation = classifyProviderHealth(response.status, latency);
+              observation = classifyProviderHealth(response.status, latency, false, route.adapter);
               // The response body may contain account details; do not read or persist it.
               await response.body?.cancel().catch(() => undefined);
             } catch {

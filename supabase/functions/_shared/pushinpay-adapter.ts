@@ -73,7 +73,7 @@ export async function createPushinPayPixPayment(
 
   const rawStatus = String(data.status || 'created');
   return {
-    providerTransactionId: String(data.id),
+    providerTransactionId: String(data.id).toLowerCase(),
     status: normalizePushinPayStatus(rawStatus),
     rawStatusCode: rawStatus,
     valueCents: typeof data.value === 'number' ? data.value : input.valueCents,
@@ -116,7 +116,7 @@ export async function getPushinPayTransaction(
   const pixDetails = data.pix_details && typeof data.pix_details === 'object' ? data.pix_details : null;
 
   return {
-    providerTransactionId: String(data.id),
+    providerTransactionId: String(data.id).toLowerCase(),
     status: normalizePushinPayStatus(rawStatus),
     rawStatusCode: rawStatus,
     valueCents: typeof data.value === 'number' ? data.value : undefined,
