@@ -77,14 +77,6 @@
       activatePage(link.hash.slice(1), true, true);
     });
   });
-  document.querySelector('#admin-recent-access [data-recent-links]')?.addEventListener('click', event => {
-    const link = event.target.closest('a[href^="#"]');
-    if (!link) return;
-    event.preventDefault();
-    const id = link.hash.slice(1);
-    if (mobile.matches) setOpen(false, false);
-    activatePage(id, true, true);
-  });
   panel.querySelectorAll('.admin-sidebar-bottom a').forEach(link => link.addEventListener('click', () => {
     if (mobile.matches) setOpen(false, false);
   }));

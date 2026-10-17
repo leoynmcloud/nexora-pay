@@ -105,7 +105,7 @@
             </div>
             <div class="receipt-item">
               <span class="receipt-label">Método</span>
-              <span class="receipt-value">${(payment.method === 'credit_card' || payment.card_brand || payment.card_last_digits) ? `<span class="card-badge">💳 Cartão</span> ${safe(payment.card_brand || 'Crédito')}${payment.card_last_digits ? ` •••• ${safe(payment.card_last_digits)}` : ''}${payment.installments ? ` em ${Number(payment.installments)}x` : ''}` : (payment.pix_copy_paste || payment.pix_encoded_image ? '<span class="pix-badge">Pix</span> Instantâneo' : 'Pagamento online')}</span>
+              <span class="receipt-value">${(payment.method === 'credit_card' || payment.card_brand || payment.card_last_digits) ? `<span class="card-badge">Cartão</span> ${safe(payment.card_brand || 'Crédito')}${payment.card_last_digits ? ` •••• ${safe(payment.card_last_digits)}` : ''}${payment.installments ? ` em ${Number(payment.installments)}x` : ''}` : (payment.pix_copy_paste || payment.pix_encoded_image ? '<span class="pix-badge">Pix</span> Instantâneo' : 'Pagamento online')}</span>
             </div>
             <div class="receipt-item">
               <span class="receipt-label">Data e Hora</span>
@@ -169,17 +169,17 @@
         <div class="checkout-failed-actions">
           ${isCard ? `
           <button type="button" class="checkout-button" data-retry-card>
-            💳 Tentar outro Cartão de Crédito
+            Tentar outro cartão de crédito
           </button>
           <button type="button" class="checkout-button outline" data-retry-pix style="margin-top:0.75rem">
-            ⚡ Pagar com Pix Instantâneo
+            Pagar com Pix
           </button>
           ` : `
           <button type="button" class="checkout-button" data-retry-pix>
-            ⚡ Pagar com Pix Instantâneo
+            Pagar com Pix
           </button>
           <button type="button" class="checkout-button outline" data-retry-card style="margin-top:0.75rem">
-            💳 Tentar com Cartão de Crédito
+            Tentar com cartão de crédito
           </button>
           `}
         </div>
@@ -315,7 +315,7 @@
             <span class="pix-badge">Pix</span> Pix Instantâneo
           </button>
           <button type="button" class="checkout-tab ${initialMethod === 'credit_card' ? 'active' : ''}" data-tab="credit_card" role="tab" aria-selected="${initialMethod === 'credit_card'}">
-            <span class="card-badge">💳</span> Cartão de crédito
+            <span class="card-badge">Cartão</span> Crédito
           </button>
           <input type="hidden" name="payment_method" value="${initialMethod}">
         </div>`
@@ -342,7 +342,7 @@
             </select>
           </label>
           <div class="card-security-badge">
-            <span class="badge-lock">🔒</span>
+            <span class="badge-lock" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><rect x="4.5" y="10" width="15" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v3"/></svg></span>
             <span>Ambiente seguro. Seus dados de cartão são protegidos e tokenizados de ponta a ponta sem passar pelos servidores da Nexora.</span>
           </div>
         </div>`
@@ -505,7 +505,7 @@
           banner.className = 'checkout-error-banner';
           banner.setAttribute('role', 'alert');
           banner.innerHTML = `
-            <div class="error-banner-icon">⚠️</div>
+            <div class="error-banner-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 3 22 20H2L12 3Z"/><path d="M12 9v5m0 3h.01"/></svg></div>
             <div class="error-banner-body">
               <strong>Pagamento com cartão não autorizado</strong>
               <p>${safe(error.message)}</p>

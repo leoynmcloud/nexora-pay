@@ -4,8 +4,8 @@
   const statusBox = document.querySelector('[data-kyc-status]'), formMessage = document.querySelector('[data-kyc-form-message]');
   // Authenticated users may submit onboarding for immediate approval and operation.
   const ACCEPTING_KYC_SUBMISSIONS = true;
-  const statusText = {DRAFT:'Preencha os dados abaixo para enviar sua conta para análise.',SUBMITTED:'Cadastro enviado com sucesso! Seus dados estão em análise pela equipe da Nexora.',UNDER_REVIEW:'Seu cadastro está em análise pela equipe da Nexora.',MANUAL_REVIEW:'Seu cadastro está em análise pela equipe da Nexora.',PENDING_DOCUMENTS:'Precisamos de ajustes nos dados para continuar.',REJECTED:'Não foi possível aprovar o cadastro. Verifique as informações para reenviar.',APPROVED:'Conta ativada com sucesso! Abrindo sua operação…',SUSPENDED:'Conta suspensa. Fale com o suporte.',BLOCKED:'Conta bloqueada. Fale com o suporte.',CLOSED:'Conta encerrada.'};
-  let user, existingDocuments = [];
+  const statusText = {DRAFT:'Cadastro ainda não enviado. Os campos com * e documentos indicados são necessários para solicitar análise.',SUBMITTED:'Cadastro enviado com sucesso! Seus dados estão em análise pela equipe da Nexora.',UNDER_REVIEW:'Seu cadastro está em análise pela equipe da Nexora.',MANUAL_REVIEW:'Seu cadastro está em análise pela equipe da Nexora.',PENDING_DOCUMENTS:'Precisamos de ajustes nos dados para continuar.',REJECTED:'Não foi possível aprovar o cadastro. Verifique as informações para reenviar.',APPROVED:'Conta ativada com sucesso! Abrindo sua operação…',SUSPENDED:'Conta suspensa. Fale com o suporte.',BLOCKED:'Conta bloqueada. Fale com o suporte.',CLOSED:'Conta encerrada.'};
+  let user, existingDocuments = [], originalApplicationData = {};
   const setStatus = (text, kind = '') => { statusBox.textContent = text; statusBox.dataset.kind = kind; };
   const message = text => { formMessage.textContent = text || ''; };
   async function requireMfaForKycSubmission() {
@@ -90,14 +90,55 @@
       label.hidden = !individual;
       label.querySelectorAll('input').forEach(input => { input.required = individual && input.dataset.requiredForIndividual === 'true'; });
     });
-    if (!individual && ownersList && !ownersList.children.length) addOwner();
+    syncRequiredMarkers();
   }
+  function syncRequiredMarkers() {
+    form.querySelectorAll('label').forEach(label => {
+      const requiredInput = label.querySelector('input[required],select[required],textarea[required]');
+      const requiredDocument = label.querySelector('[data-kyc-document]');
+      const documentAlreadyUploaded = requiredDocument && existingDocuments.some(doc =>
+        doc.document_type === requiredDocument.dataset.kycDocument
+        && doc.subject_key === (requiredDocument.dataset.documentSubject || 'company')
+        && doc.storage_path
+      );
+      const required = !!requiredInput || (label.hasAttribute('data-required-document') && !label.hidden && !documentAlreadyUploaded);
+      label.classList.toggle('required-field', required);
+    });
+  }
+  form.addEventListener('input', event => event.target.closest('label')?.classList.remove('invalid-field'));
+  form.addEventListener('change', event => event.target.closest('label')?.classList.remove('invalid-field'));
   accountType.addEventListener('change', syncAccountType);
   form.querySelector('[data-kyc-add-owner]').addEventListener('click', () => {
     if (ownersList.children.length >= 50) return message('O limite é de 50 pessoas relacionadas.');
     addOwner();
   });
   documentNumber.addEventListener('input', () => { documentNumber.value = documentNumber.value.toUpperCase(); });
+  const postalCodeInput = form.querySelector('[name="company.postal_code"]');
+  const addressLookupStatus = form.querySelector('[data-address-lookup-status]');
+  postalCodeInput.addEventListener('blur', async () => {
+    const postalCode = postalCodeInput.value.replace(/\D/g, '');
+    if (postalCode.length !== 8) return;
+    addressLookupStatus.textContent = 'Buscando endereço pelo CEP…';
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${postalCode}/json/`, { headers: { Accept: 'application/json' } });
+      if (!response.ok) throw new Error('CEP indisponível');
+      const address = await response.json();
+      if (address.erro) throw new Error('CEP não encontrado');
+      const values = {
+        'company.address_street': address.logradouro,
+        'company.address_neighborhood': address.bairro,
+        'company.address_city': address.localidade,
+        'company.address_state': address.uf
+      };
+      Object.entries(values).forEach(([name, value]) => {
+        const input = form.querySelector(`[name="${name}"]`);
+        if (input && !input.value.trim() && value) input.value = value;
+      });
+      addressLookupStatus.textContent = 'Endereço preenchido pelo CEP. Confira e complete o número.';
+    } catch (_) {
+      addressLookupStatus.textContent = 'Não conseguimos consultar o CEP agora. Você pode preencher o endereço manualmente.';
+    }
+  });
   syncAccountType();
   function fill(data) {
     if (!data) return;
@@ -126,6 +167,41 @@
     const labels = {cnpj_proof:'Comprovante CNPJ',company_articles:'Contrato social',representative_id_front:'Documento · frente',representative_id_back:'Documento · verso',company_address_proof:'Endereço da empresa',bank_proof:'Comprovante bancário',power_of_attorney:'Procuração',activity_license:'Licença da atividade',financial_document:'Documento financeiro',additional_document:'Foto com documento',owner_id_front:'Identidade do sócio · frente',owner_id_back:'Identidade do sócio · verso',owner_address_proof:'Endereço do sócio'};
     existingDocuments.forEach(doc => { const item = document.createElement('p'); item.textContent = doc.file_name + ' · ' + (labels[doc.document_type] || doc.document_type) + ' · ' + (doc.subject_key || 'company'); box.append(item); });
     form.querySelector('[data-kyc-docs]')?.append(box);
+  }
+  function validateRequiredKycDocuments(isIndividual, ownerRows) {
+    const required = [
+      ['representative_id_front','representative'],
+      ['representative_id_back','representative'],
+      ['additional_document','representative']
+    ];
+    if (!isIndividual) required.push(
+      ['cnpj_proof','company'],['company_articles','company'],
+      ['company_address_proof','company'],['bank_proof','company']
+    );
+    const missingDocuments = [];
+    for (const [type, subject] of required) {
+      const input = form.querySelector(`[data-kyc-document="${type}"]`);
+      const exists = existingDocuments.some(doc => doc.document_type === type && doc.subject_key === subject && doc.storage_path);
+      if (!exists && !input?.files?.[0]) {
+        const label = input?.closest('label');
+        label?.classList.add('invalid-field');
+        missingDocuments.push(label?.textContent.trim().replace(/\s+/g, ' ') || type);
+      }
+    }
+    if (missingDocuments.length) throw new Error(`Envie os documentos obrigatórios indicados em vermelho: ${missingDocuments.join('; ')}.`);
+    for (const row of ownerRows) {
+      for (const field of row.querySelectorAll('[data-owner-field]:not([type="checkbox"])')) {
+        if (!field.value.trim()) throw new Error('Complete todos os dados da pessoa relacionada ou remova o cadastro dela.');
+      }
+      const cpf = row.querySelector('[data-owner-field="cpf"]')?.value || '';
+      if (!window.NexoraBrazilianDocuments.isValid(cpf, 'cpf')) throw new Error('Confira o CPF da pessoa relacionada.');
+      const subject = 'owner:' + row.dataset.ownerKey;
+      for (const type of ['owner_id_front','owner_id_back']) {
+        const input = row.querySelector(`[data-owner-document="${type}"]`);
+        const exists = existingDocuments.some(doc => doc.document_type === type && doc.subject_key === subject && doc.storage_path);
+        if (!exists && !input?.files?.[0]) throw new Error('Se informar sócios, envie frente e verso do documento de cada pessoa.');
+      }
+    }
   }
   async function initialize() {
     try {
@@ -157,23 +233,33 @@
       const {data:docs,error:docsError} = await client.from('merchant_kyc_documents').select('document_type,subject_key,file_name,storage_path,uploaded_at').eq('user_id',user.id).order('uploaded_at',{ascending:false});
       if (docsError) throw docsError;
       existingDocuments = docs || [];
+      syncRequiredMarkers();
       const explanation = application?.reason_description ? ' Motivo/orientação: ' + application.reason_description : '';
       setStatus((statusText[state] || statusText.DRAFT) + explanation, state === 'REJECTED' || state === 'PENDING_DOCUMENTS' ? 'warning' : state === 'DRAFT' ? '' : 'success');
       if (['SUBMITTED','UNDER_REVIEW','MANUAL_REVIEW','SUSPENDED','BLOCKED','CLOSED'].includes(state)) {
         const signout = document.querySelector('[data-kyc-logout]'); signout.textContent = 'Sair da conta';
         return;
       }
-      fill(application?.data || {});
+      originalApplicationData = application?.data || {};
+      fill(originalApplicationData);
       if (!form.querySelector('[name="company.phone"]').value.trim()) form.querySelector('[name="company.phone"]').value = user.user_metadata?.phone || user.phone || '';
       showUploadedDocs(); form.hidden = false;
     } catch (error) { setStatus(window.NexoraAPI.errorMessage(error),'error'); }
   }
   document.querySelector('[data-kyc-logout]').onclick = () => window.NexoraUI.confirm('Sair da conta?', 'Você precisará entrar novamente para continuar o cadastro.', window.NexoraUI.logout, 'Sair');
   form.addEventListener('submit', async event => {
-    event.preventDefault(); if (!form.reportValidity()) return;
+    event.preventDefault();
+    const card = form.closest('.onboarding-card');
+    card.classList.add('was-validated');
+    form.querySelectorAll('.invalid-field').forEach(label => label.classList.remove('invalid-field'));
+    if (!form.reportValidity()) {
+      const invalid = form.querySelector(':invalid');
+      invalid?.closest('label')?.classList.add('invalid-field');
+      return;
+    }
     const submit = form.querySelector('[type=submit]'); submit.disabled = true; submit.textContent = 'Enviando com segurança…'; message('');
     try {
-      const data = {};
+      const data = JSON.parse(JSON.stringify(originalApplicationData || {}));
       form.querySelectorAll('[name]').forEach(input => {
         if (input.type === 'file' || input.name === 'consent') return;
         if (input.type === 'checkbox') setNested(data,input.name,input.checked);
@@ -186,6 +272,11 @@
       // into businesses.document. The generic document_number remains the canonical UI field.
       data.company.cnpj = data.company.document_number;
       data.company.trade_name = data.company.trade_name || data.company.legal_name;
+      data.settlement ||= {};
+      // The withdrawal destination is collected when the merchant requests a payout.
+      delete data.settlement.pix_key;
+      data.settlement.holder_document = data.company.document_number;
+      data.company.payment_mix ||= { pix: 100, card: 0, boleto: 0 };
       data.address = {
         postal_code: data.company.postal_code || '',
         street: data.company.address_street || '',
@@ -203,6 +294,7 @@
       }
       if (!/^\S+@\S+\.\S+$/.test(data.company.email || '')) throw new Error('Entre novamente para atualizar o e-mail da conta.');
       const ownerRows = [...ownersList.querySelectorAll('[data-owner-row]')];
+      validateRequiredKycDocuments(isIndividual, ownerRows);
       data.owners = isIndividual ? [{
         id: crypto.randomUUID(), full_name: data.representative.full_name, cpf: data.company.document_number,
         birth_date: data.representative.birth_date, nationality: data.representative.nationality,

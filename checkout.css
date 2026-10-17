@@ -38,6 +38,7 @@
 .checkout-select:focus-visible{outline:3px solid #a989ff;outline-offset:2px}
 .card-security-badge{display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:12px;color:#64748b;margin-top:2px}
 .card-security-badge .badge-lock{font-size:14px}
+.card-security-badge .badge-lock svg{display:block;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 @media print{body{background:#fff}.checkout-shell{width:100%;padding:0}.checkout-brand,footer,.receipt-actions,.checkout-footnote{display:none!important}.checkout-card{box-shadow:none;border:none;padding:0}}
 
 .checkout-methods{border:1px solid #dcdcec;border-radius:12px;padding:.75rem 1rem;margin:0 0 1rem;display:flex;gap:1.25rem;flex-wrap:wrap}.checkout-methods legend{font-size:.8rem;color:#6b6b80;padding:0 .4rem}.checkout-method{display:flex;align-items:center;gap:.4rem;cursor:pointer;font-weight:600}.checkout-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
@@ -62,7 +63,8 @@
 .checkout-failed-instruction{margin:10px 0 0;font-size:13px;color:#78350f;line-height:1.4}
 .checkout-failed-actions{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
 .checkout-error-banner{background:#fff7f8;border:1px solid #fecdd3;border-radius:12px;padding:14px 16px;display:flex;gap:12px;margin-bottom:16px;animation:tabFade .2s ease}
-.error-banner-icon{font-size:22px;line-height:1}
+.error-banner-icon{display:grid;place-items:center;width:26px;height:26px;flex:none}
+.error-banner-icon svg{display:block;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .error-banner-body{flex:1;font-size:13px;color:#9f1239}
 .error-banner-body strong{display:block;font-size:14px;color:#881337;margin-bottom:4px}
 .error-banner-body p{margin:0 0 10px;line-height:1.4}

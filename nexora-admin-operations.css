@@ -18,7 +18,6 @@
 .admin-sidebar .admin-workspace small,
 .admin-sidebar .admin-workspace span,
 .admin-sidebar .admin-nav-label,
-.admin-sidebar .recent-access > small,
 .admin-sidebar-bottom small { color: var(--admin-nav-muted); }
 .admin-sidebar .admin-sidebar-caption,
 .admin-sidebar .admin-nav-label { color: #b8a5d2; }
@@ -34,16 +33,13 @@
 .admin-sidebar .admin-side-nav .nx-icon,
 .admin-sidebar .admin-sidebar-bottom .nx-icon { color: #c6a5ff; }
 .admin-sidebar .admin-sidebar-bottom { border-color: var(--admin-nav-line); }
-.admin-sidebar .recent-access { border-color: #523674; }
-.admin-sidebar .recent-access a { color: #eee6fa; }
 html.theme-light .admin-body .admin-sidebar {
   background: #24143b;
   border-color: #42265f;
   color: #eee6fa;
 }
 html.theme-light .admin-body .admin-sidebar .admin-side-nav a,
-html.theme-light .admin-body .admin-sidebar .admin-sidebar-bottom > a,
-html.theme-light .admin-body .admin-sidebar .recent-access a { color: #eee6fa; }
+html.theme-light .admin-body .admin-sidebar .admin-sidebar-bottom > a { color: #eee6fa; }
 html.theme-light .admin-body .admin-sidebar .admin-side-nav a:hover,
 html.theme-light .admin-body .admin-sidebar .admin-sidebar-bottom > a:hover { background: #382353; color: #fff; }
 html.theme-light .admin-body .admin-sidebar .admin-side-nav a[aria-current="page"] { background: #49306a; color: #fff; }
@@ -268,3 +264,5 @@ html:not(.theme-light) .admin-chart-empty-icon { background: #49306a; color: #d4
 .admin-funds-hold-reason{grid-column:auto}
 @media(max-width:900px){.admin-funds-hold-form{grid-template-columns:1fr 1fr}.admin-funds-hold-reason{grid-column:1/-1}.admin-funds-hold-form>button{grid-column:1/-1}}
 @media(max-width:560px){.admin-funds-hold-form{grid-template-columns:1fr}.admin-funds-hold-reason,.admin-funds-hold-form>button{grid-column:auto}}
+.kyc-approved-icon,.kyc-empty-doc-icon{display:grid;place-items:center;flex:none;width:24px;height:24px}
+.kyc-approved-icon svg,.kyc-empty-doc-icon svg{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}

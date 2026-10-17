@@ -13,8 +13,8 @@
   const message = (text, type = '') => { const node = document.querySelector('.auth-message'); node.textContent = text; node.className = 'auth-message ' + type; };
 
   function renderCaptcha() {
-    // Exclusivo para cadastro (signup) conforme solicitado pelo lojista
-    const needed = !!captchaSiteKey && mode === 'signup';
+    // O Supabase pode exigir CAPTCHA em login, cadastro e recuperação de senha.
+    const needed = !!captchaSiteKey && ['login', 'signup', 'forgot', 'verify-signup', 'verify-recovery'].includes(mode);
     captchaBox.hidden = !needed;
     if (!needed) return;
     const isHcaptcha = captchaProvider === 'hcaptcha';
@@ -55,7 +55,8 @@
     }
   }
   function requireCaptchaToken() {
-    if (!captchaSiteKey || mode !== 'signup') return undefined;
+    const needed = !!captchaSiteKey && ['login', 'signup', 'forgot', 'verify-signup', 'verify-recovery'].includes(mode);
+    if (!needed) return undefined;
     const isHcaptcha = captchaProvider === 'hcaptcha';
     const api = isHcaptcha ? window.hcaptcha : window.grecaptcha;
     if (api && captchaWidgetId !== null && typeof api.getResponse === 'function') {
@@ -148,8 +149,9 @@
     }
     else {
       const access = await window.NexoraAPI.rpc('get_my_access');
-      const needsKycForm = ['DRAFT', 'PENDING_DOCUMENTS', 'REJECTED'].includes(access?.onboarding_status);
-      location.assign((access?.can_access && !needsKycForm) ? 'platform.html' : 'onboarding.html');
+      // New merchants should be able to explore their read-only workspace first.
+      // Payment and payout actions remain gated by onboarding approval in the platform.
+      location.assign(access?.can_access ? 'platform.html' : 'onboarding.html');
     }
   }
   async function startMfaIfRequired(isAdmin = false) {

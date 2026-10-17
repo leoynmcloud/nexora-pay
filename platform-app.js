@@ -478,7 +478,7 @@
   const ledgerEventIcons = {
     'payment.received': { icon: '↗', color: '#10b981', bg: 'rgba(16, 185, 129, 0.12)' },
     'settlement.released': { icon: '✓', color: '#10b981', bg: 'rgba(16, 185, 129, 0.12)' },
-    'reserve.released': { icon: '🔓', color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.12)' },
+    'reserve.released': { icon: '✓', color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.12)' },
     'payout.reserved': { icon: '↘', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.12)' },
     'payout.rejected': { icon: '↩', color: '#6366f1', bg: 'rgba(99, 102, 241, 0.12)' },
   };
@@ -645,6 +645,7 @@
     no_available_balance: 'Não há saldo disponível para solicitar saque.',
     daily_usage_unavailable: 'Não foi possível confirmar o uso do limite diário de saques.',
     daily_limit_reached: 'O limite diário de saques já foi atingido.',
+    workspace_unavailable: 'Não foi possível confirmar o workspace.',
     payout_amount_unavailable: 'Não foi possível calcular o valor máximo para saque.',
   };
   // PAYOUT_READINESS_NORMALIZER_START — pure; anything malformed or contradictory returns null (not verified).
@@ -663,7 +664,6 @@
     return { canRequest: true, availableCents, maxRequestCents, reasons: [] };
   }
   // PAYOUT_READINESS_NORMALIZER_END
-  // Compliance: O saldo disponível no ledger não significa transferência liberada. Solicitações reais permanecem bloqueadas durante a homologação da operação.
   function payoutReadinessBanner(readiness) {
     return '';
   }
@@ -868,7 +868,7 @@
   }
   function settings() {
     const locked = !canOperate();
-      main.innerHTML = shell('Configurações', 'Alterações persistidas na sua conta, não apenas neste navegador.', `${locked ? '<div class="nx-banner">Complete o cadastro para liberar as configurações da operação.</div>' : ''}<form class="nx-settings" data-settings><article class="settings-card"><h2>Perfil e workspace</h2>${field('Nome exibido', `<input name="profile_name" value="${e(name())}" required maxlength="160" ${locked ? 'disabled' : ''}>`)}${field('E-mail', `<input value="${e(window.nexoraSessionUser.email)}" disabled>`)}${field('Nome do workspace', `<input name="workspace_name" value="${e(state.business_name || window.nexoraAccess?.business_name || '')}" required maxlength="160" ${locked ? 'disabled' : ''}>`)}<label class="nx-check"><input name="alerts" type="checkbox" ${state.settings.alerts !== false ? 'checked' : ''} ${locked ? 'disabled' : ''}> Exibir notificações de movimentações</label><p class="nx-muted">Resumo semanal por e-mail ainda não disponível.</p><button class="button button-primary" type="submit" ${locked ? 'disabled title="Complete o cadastro"' : ''}>Salvar configurações</button><p data-settings-message role="status"></p></article><article class="settings-card"><h2>Segurança</h2><button class="button outline" type="button" data-action="password">Recuperar / alterar senha</button><button class="button outline" type="button" data-action="logout">Sair da conta</button><h3>Autenticação em duas etapas</h3><p class="nx-muted">Adicione uma camada extra de proteção ao acesso da sua conta com autenticação em duas etapas (TOTP). O Supabase valida o fator com segurança.</p><div data-mfa-panel role="status">Verificando fatores cadastrados…</div>${locked ? '' : '<h3>Registros antigos do navegador</h3><p class="nx-muted">Dados antigos não são enviados automaticamente ao banco. Você pode exportá-los para revisão, sem alterar os registros atuais.</p><button class="button outline" type="button" data-action="export-legacy">Exportar dados locais antigos</button>'}</article></form>`);
+      main.innerHTML = shell('Configurações', 'Gerencie seu perfil, workspace e segurança da conta.', `${locked ? '<div class="nx-banner">Complete o cadastro para liberar as configurações da operação.</div>' : ''}<form class="nx-settings" data-settings><article class="settings-card"><h2>Perfil e workspace</h2><p class="nx-muted">Essas informações identificam sua conta e o espaço de trabalho no painel.</p>${field('Nome exibido', `<input name="profile_name" value="${e(name())}" required maxlength="160" ${locked ? 'disabled' : ''}>`)}<div class="settings-account-actions">${field('E-mail da conta', `<input value="${e(window.nexoraSessionUser.email)}" disabled autocomplete="email">`)}<button class="button outline" type="button" data-action="email-change">Alterar e-mail</button></div>${field('Nome do workspace', `<input name="workspace_name" value="${e(state.business_name || window.nexoraAccess?.business_name || '')}" required maxlength="160" ${locked ? 'disabled' : ''}>`)}<div class="settings-workspace-note">O nome do workspace aparece no seu painel. O gerenciamento de membros e permissões ainda não está disponível nesta tela.</div><label class="nx-check"><input name="alerts" type="checkbox" ${state.settings.alerts !== false ? 'checked' : ''} ${locked ? 'disabled' : ''}> Exibir notificações de movimentações</label><p class="nx-muted">Resumo semanal por e-mail ainda não disponível.</p><button class="button button-primary" type="submit" ${locked ? 'disabled title="Complete o cadastro"' : ''}>Salvar configurações</button><p data-settings-message role="status"></p></article><article class="settings-card"><h2>Segurança</h2><div class="settings-account-actions"><button class="button outline" type="button" data-action="password">Recuperar / alterar senha</button><button class="button outline" type="button" data-action="logout">Sair da conta</button></div><h3>Autenticação em duas etapas</h3><p class="nx-muted">Adicione uma camada extra de proteção ao acesso da sua conta com autenticação em duas etapas (TOTP). O Supabase valida o fator com segurança.</p><div data-mfa-panel role="status">Verificando fatores cadastrados…</div></article></form>`);
     loadMfaPanel();
   }
   async function loadMfaPanel() {
@@ -893,11 +893,10 @@
         await window.nexoraSupabase.auth.mfa.unenroll({ factorId: f.id }).catch(() => {});
       }
     } catch (_) {}
-    const userEmail = window.nexoraSessionUser?.email || 'lojista';
     const { data, error } = await window.nexoraSupabase.auth.mfa.enroll({
       factorType: 'totp',
       issuer: 'Nexora Pay',
-      friendlyName: userEmail,
+      friendlyName: 'Nexora Pay',
     });
     if (error) throw new Error(API.errorMessage(error));
     const factorId = data.id, qr = data.totp?.qr_code, secret = data.totp?.secret;
@@ -925,6 +924,16 @@
   async function saveSettings(values = {}) {
     await mutation('nexora_save_settings', { p_profile_name: values.profile_name || name(), p_workspace_name: values.workspace_name || state.business_name, p_alerts: values.alerts ?? (state.settings.alerts !== false), p_chart_range: values.chart_range || state.settings.chart_range || 'Últimos 6 meses' }, 'Configurações salvas no Supabase.');
   }
+  function changeAccountEmail() {
+    const currentEmail = window.nexoraSessionUser?.email || '';
+    UI.modal('Alterar e-mail da conta', `<p>Informe o novo endereço. A alteração só será concluída depois que você confirmar o link enviado pelo Supabase.</p>${field('E-mail atual', `<input type="email" value="${e(currentEmail)}" disabled autocomplete="email">`)}${field('Novo e-mail', '<input type="email" name="new_email" required maxlength="254" autocomplete="email" placeholder="voce@exemplo.com">')}`, async modal => {
+      const newEmail = String(new FormData(modal.querySelector('form')).get('new_email') || '').trim();
+      if (!newEmail || newEmail.toLowerCase() === currentEmail.toLowerCase()) throw new Error('Informe um endereço diferente do e-mail atual.');
+      const { error } = await window.nexoraSupabase.auth.updateUser({ email: newEmail }, { emailRedirectTo: `${location.origin}/auth.html?mode=login` });
+      if (error) throw new Error(API.errorMessage(error));
+      UI.toast('Enviamos um link de confirmação para o novo e-mail. Confirme-o para concluir a alteração.');
+    }, { submitLabel: 'Enviar confirmação' });
+  }
   function account() {
     main.innerHTML = shell('Minha conta', 'Seu perfil e acesso à Nexora Pay.', `<div class="account-grid"><article class="account-card"><h2>${e(name())}</h2><p>${e(window.nexoraSessionUser.email)}</p><span class="role-pill">Conta principal do workspace</span></article><article class="account-card"><h2>${e(state.business_name)}</h2><p>Acesso sem planos ou mensalidade.</p><button class="button outline" data-action="configuracoes">Gerenciar workspace</button></article><article class="account-card"><h2>Segurança</h2><p>Autenticação gerenciada pelo Supabase.</p><button class="button outline" data-action="password">Alterar senha</button></article></div>`);
   }
@@ -939,19 +948,27 @@
     const setup = integrationSetup || {}, connection = setup.connection || {}, controls = setup.controls || {};
     const production = connection.environment === 'production';
     const connectionStatus = ({pending:'Validando conexão',active:'Conectado',disabled:'Desativado',error:'Ajuste necessário'}[connection.status] || 'Operação ativa');
-    const body = `<section class="integration-grid"><article><h3>Conexão de pagamentos</h3><p>Gerenciada pela Nexora para sua conta.</p><span class="nx-status ${connection.status === 'active' ? 'paid' : 'pending'}">${e(connectionStatus)}</span><small>${connection.environment === 'sandbox' ? 'Ambiente de testes' : production ? 'Ambiente de produção' : ''}</small></article><article><h3>Recebimentos</h3><p>${paymentsReady() ? 'Cobranças disponíveis para sua conta.' : e(paymentReadinessMessage())}</p></article><article><h3>Saques</h3><p>${controls.withdrawals_enabled ? 'Saques via Pix liberados para sua conta.' : 'Disponível após ativação da conta.'}</p><small>Transferências são processadas via Pix para a mesma titularidade da conta.</small></article></section>
-      <article class="settings-card"><h2>Integração de pagamentos</h2><p>As credenciais são protegidas e administradas pela Nexora. Esta conta não pode visualizar nem substituir chaves.</p>${paymentsReady() ? `<p class="nx-status paid">Conexão ativa</p><button class="button outline" type="button" data-action="test-connection">Testar conexão</button> <button class="button button-primary" type="button" data-action="new-charge">Criar cobrança</button>` : `<p class="nx-muted">${e(paymentReadinessMessage())} Se o bloqueio persistir, fale com o suporte.</p>`}</article>
-      <article class="settings-card"><h2>Chaves de API</h2><p>Chaves para integração de checkout e cobranças via API pública. Guarde sua chave com segurança no servidor.</p><button type="button" class="button button-primary" data-action="api-key-create">Criar chave</button><div data-merchant-api-keys><p class="nx-muted" role="status">Carregando chaves…</p></div></article>
-      ${production ? '<div class="nx-banner"><b>Cobranças reais</b><span>Confira valor, recebedor e descrição antes de compartilhar o pagamento.</span></div>' : '<div class="nx-banner"><b>Ambiente de testes</b><span>As cobranças não movimentam dinheiro real.</span></div>'}`;
+    const body = `<div class="connection-page"><section class="connection-overview" aria-label="Resumo das integrações"><article class="connection-tile"><small>Provedor</small><h3>Conexão de pagamentos</h3><p>Credenciais protegidas e gerenciadas pela Nexora.</p><span class="nx-status ${connection.status === 'active' ? 'paid' : 'pending'}">${e(connectionStatus)}</span></article><article class="connection-tile"><small>Recebimentos</small><h3>${paymentsReady() ? 'Pronto para cobrar' : 'Configuração necessária'}</h3><p>${e(paymentsReady() ? 'A emissão de cobranças está habilitada para esta conta.' : paymentReadinessMessage())}</p></article><article class="connection-tile"><small>Saques</small><h3>${controls.withdrawals_enabled ? 'Pix habilitado' : 'Aguardando liberação'}</h3><p>${controls.withdrawals_enabled ? 'Transferências disponíveis conforme os controles da conta.' : 'A disponibilidade depende da análise e das configurações da conta.'}</p></article></section>
+      <section class="connection-panel"><div class="connection-panel-head"><div><span class="connection-eyebrow">Conexão gerenciada</span><h2>Meios de pagamento</h2><p>${e(connection.environment === 'sandbox' ? 'Ambiente de testes: as operações não movimentam dinheiro real.' : production ? 'Ambiente de produção configurado para esta conta.' : 'A Nexora administra a conexão e protege as credenciais do provedor.')}</p></div><span class="nx-status ${connection.status === 'active' ? 'paid' : 'pending'}">${e(connectionStatus)}</span></div><div class="connection-actions">${paymentsReady() ? '<button class="button outline" type="button" data-action="test-connection">Testar conexão</button><button class="button button-primary" type="button" data-action="new-charge">Criar cobrança</button>' : `<p class="nx-muted">${e(paymentReadinessMessage())}</p>`}</div></section>
+      <section class="connection-panel"><div class="connection-panel-head"><div><span class="connection-eyebrow">Para integrações servidor a servidor</span><h2>Chaves de API</h2><p>Crie credenciais com escopos definidos. A chave secreta aparece uma única vez e deve ficar somente no seu servidor.</p></div><button type="button" class="button button-primary" data-action="api-key-create">Criar chave</button></div><div data-merchant-api-keys><p class="nx-muted" role="status">Carregando chaves…</p></div></section>
+      <section class="connection-help-grid" aria-label="Boas práticas de integração"><article class="connection-help"><h3>Proteja suas chaves</h3><p>Não as coloque no navegador, em aplicativos móveis ou no repositório do seu projeto. Se houver exposição, revogue ou rotacione a chave.</p></article><article class="connection-help"><h3>Separe os ambientes</h3><p>Use credenciais Sandbox para testes e Produção apenas no servidor que processa operações reais.</p></article></section></div>`;
     main.innerHTML = shell('Integrações', 'Veja os recursos disponíveis para sua conta.', body);
     loadMerchantApiKeys();
+  }
+  function edgeFunctionMessage(error, functionName) {
+    const status = Number(error?.context?.status || 0);
+    if (status === 404) return `A função ${functionName} não foi encontrada no projeto Supabase. Confirme se ela foi publicada.`;
+    if (status >= 500) return `A função ${functionName} retornou um erro do servidor (HTTP ${status}). Tente novamente mais tarde.`;
+    if (/failed to send a request|fetcherror|failed to fetch|networkerror/i.test(String(error?.message || '')))
+      return `Não foi possível alcançar a função ${functionName}. Verifique a conexão, o CORS da origem local e se a função atualizada foi publicada no Supabase.`;
+    return API.errorMessage(error);
   }
   async function merchantApiKeyRequest(body) {
     const { data, error } = await window.nexoraSupabase.functions.invoke('nexora-merchant-api-keys', { body });
     if (error) {
       let payload = {};
       try { payload = await error.context?.clone?.json() || {}; } catch (_) {}
-      throw new Error(payload.error || API.errorMessage(error));
+      throw new Error(payload.error || edgeFunctionMessage(error, 'nexora-merchant-api-keys'));
     }
     if (!data || data.error) throw new Error(data?.error || 'Não foi possível gerenciar a chave da API.');
     return data;
@@ -971,7 +988,7 @@
     try {
       const { keys } = await merchantApiKeyRequest({ action: 'list', business_id: state.business_id });
       target.innerHTML = keys.length ? `<div class="nx-table-wrap"><table class="nx-table"><thead><tr><th>Chave</th><th>Ambiente</th><th>Escopos</th><th>Status</th><th>Uso</th><th>Ações</th></tr></thead><tbody>${keys.map(key => `<tr><td><b>${e(key.name)}</b><br><code>${e(key.key_prefix)}…</code></td><td>${key.environment === 'production' ? 'Produção' : 'Sandbox'}</td><td>${key.scopes.map(e).join(', ')}</td><td><span class="nx-status ${key.status === 'active' ? 'paid' : 'pending'}">${key.status === 'active' ? 'Ativa' : 'Revogada'}</span></td><td>${key.last_used_at ? e(C.date(key.last_used_at)) : 'Nunca'}</td><td>${key.status === 'active' ? `<button type="button" class="button outline compact" data-api-key-rotate="${e(key.id)}">Rotacionar</button> <button type="button" class="button outline compact" data-api-key-revoke="${e(key.id)}">Revogar</button>` : '—'}</td></tr>`).join('')}</tbody></table></div>` : '<div class="nx-empty">Nenhuma chave criada.</div>';
-    } catch (error) { target.innerHTML = `<p class="nx-form-error" role="alert">${e(error.message)}</p>`; }
+    } catch (error) { target.innerHTML = `<div class="connection-error" role="alert"><p>${e(error.message)}</p><button type="button" class="button outline compact" data-action="api-keys-refresh">Tentar novamente</button></div>`; }
   }
   function createMerchantApiKey() {
     const scopeOptions = ['payments:read', 'payments:write'];
@@ -1006,7 +1023,7 @@
     if (error) {
       let payload = {};
       try { payload = await error.context?.clone?.().json() || {}; } catch (_) {}
-      throw new Error(payload.error || API.errorMessage(error));
+      throw new Error(payload.error || edgeFunctionMessage(error, 'nexora-merchant-webhooks'));
     }
     if (!data || data.error) throw new Error(data?.error || 'Não foi possível executar a ação de webhook.');
     return data;
@@ -1026,12 +1043,12 @@
     target.innerHTML = '<p class="nx-muted" role="status">Carregando endpoints…</p>';
     try {
       const { endpoints } = await webhookRequest({ action: 'list', business_id: state.business_id });
-      target.innerHTML = endpoints.length ? `<div class="nx-table-wrap"><table class="nx-table"><thead><tr><th>Endpoint</th><th>Eventos</th><th>Status</th><th>Ações</th></tr></thead><tbody>${endpoints.map(item => `<tr><td><code>${e(item.endpoint_url)}</code></td><td>${item.subscribed_events.map(e).join(', ')}</td><td><span class="nx-status ${item.status === 'active' ? 'paid' : 'pending'}">${item.status === 'active' ? 'Ativo' : 'Desativado'}</span></td><td>${item.status === 'active' ? `<button class="button outline compact" data-webhook-rotate="${e(item.id)}">Gerar novo segredo</button> <button class="button outline compact" data-webhook-disable="${e(item.id)}">Desativar</button>` : '—'}</td></tr>`).join('')}</tbody></table></div>` : '<div class="nx-empty">Nenhum endpoint cadastrado.</div>';
-    } catch (error) { target.innerHTML = `<p class="nx-form-error" role="alert">${e(error.message)}</p>`; }
+      target.innerHTML = endpoints.length ? `<div class="connection-endpoint-list">${endpoints.map(item => `<article class="connection-endpoint"><div><code>${e(item.endpoint_url)}</code><p>${item.subscribed_events.map(e).join(' · ')}</p></div><span class="nx-status ${item.status === 'active' ? 'paid' : 'pending'}">${item.status === 'active' ? 'Ativo' : 'Desativado'}</span><div class="connection-endpoint-actions">${item.status === 'active' ? `<button type="button" class="button outline compact" data-webhook-rotate="${e(item.id)}">Gerar novo segredo</button><button type="button" class="button outline compact" data-webhook-disable="${e(item.id)}">Desativar</button>` : '—'}</div></article>`).join('')}</div>` : '<div class="connection-empty">Nenhum endpoint configurado. Adicione um endpoint HTTPS para receber atualizações no seu sistema.</div>';
+    } catch (error) { target.innerHTML = `<div class="connection-error" role="alert"><p>${e(error.message)}</p><button type="button" class="button outline compact" data-action="webhooks-refresh">Tentar novamente</button></div>`; }
   }
   function webhooks() {
     if (!canOperate()) { main.innerHTML = shell('Webhooks', 'Complete o cadastro para liberar esta área.', '<div class="nx-empty">Complete o cadastro.</div>'); return; }
-    main.innerHTML = shell('Webhooks', 'Conecte seu sistema para receber notificações em tempo real.', `<article class="settings-card"><h2>Notificações do seu sistema</h2><p>A Nexora envia eventos via webhook quando um pagamento é confirmado, falha ou expira. A assinatura é HMAC-SHA256 com timestamp; responda HTTP 2xx para confirmar a entrega.</p><p class="nx-muted">Nunca compartilhe o segredo no navegador ou cliente público. As entregas podem ser repetidas em caso de instabilidade; deduplique pelo <code>event_id</code>.</p><button type="button" class="button button-primary" data-action="webhook-create">+ Adicionar endpoint</button></article><article class="settings-card"><h2>Endpoints configurados</h2><div data-webhook-endpoints><p role="status">Carregando…</p></div></article>`);
+    main.innerHTML = shell('Webhooks', 'Acompanhe e configure notificações entre a Nexora e o seu sistema.', `<div class="connection-page"><section class="connection-panel"><div class="connection-panel-head"><div><span class="connection-eyebrow">Eventos da operação</span><h2>Notificações automáticas</h2><p>Receba atualizações no seu servidor quando o estado de um pagamento mudar.</p></div><button type="button" class="button button-primary" data-action="webhook-create">Adicionar endpoint</button></div><div class="connection-help-grid"><article class="connection-help"><h3>Eventos disponíveis</h3><p><code>payment.succeeded</code> · pagamento confirmado</p><p><code>payment.failed</code> · pagamento recusado</p><p><code>payment.canceled</code> · pagamento cancelado ou expirado</p></article><article class="connection-help"><h3>Valide cada entrega</h3><p>A Nexora assina o corpo com HMAC-SHA256 e timestamp. Responda com HTTP 2xx e deduplique pelo <code>event_id</code>, pois uma notificação pode ser reenviada.</p></article></div></section><section class="connection-panel"><div class="connection-panel-head"><div><span class="connection-eyebrow">Configuração</span><h2>Endpoints cadastrados</h2><p>Use uma URL HTTPS pública. O segredo é mostrado uma única vez ao criar ou rotacionar.</p></div><button type="button" class="button outline" data-action="webhooks-refresh">Atualizar lista</button></div><div data-webhook-endpoints><p class="nx-muted" role="status">Carregando endpoints…</p></div></section></div>`);
     loadWebhookEndpoints();
   }
   function createWebhookEndpoint() {
@@ -1087,11 +1104,6 @@
     const url = URL.createObjectURL(new Blob([text], { type })), a = document.createElement('a');
     a.href = url; a.download = file; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
-  function exportLegacy() {
-    let saved; try { saved = localStorage.getItem(`nexora-demo-v4:${window.nexoraSessionUser.id}`); } catch { /* Do not read other accounts. */ }
-    if (!saved) return UI.toast('Nenhum registro antigo neste navegador para sua conta.');
-    download(saved, 'nexora-registros-locais-para-revisao.json', 'application/json');
-  }
   document.addEventListener('click', async (event) => {
     const transactionTab = event.target.closest('[data-transaction-view]');
     if (transactionTab) {
@@ -1128,6 +1140,9 @@
       if (action === 'mfa-enroll') return enrollMfa().catch(error => UI.toast(error.message || 'Não foi possível iniciar a autenticação.'));
       if (action === 'webhook-create') return createWebhookEndpoint();
       if (action === 'api-key-create') return createMerchantApiKey();
+      if (action === 'api-keys-refresh') return loadMerchantApiKeys();
+      if (action === 'webhooks-refresh') return loadWebhookEndpoints();
+      if (action === 'email-change') return changeAccountEmail();
       if (action === 'test-connection') return testProviderConnection(event.target.closest('[data-action="test-connection"]'));
       if (action === 'mfa-remove-pending') {
         const factorId = event.target.closest('[data-factor-id]').dataset.factorId;
@@ -1147,7 +1162,6 @@
       }, 'Enviar link');
       if (action === 'logout') return UI.confirm('Sair da conta?', 'Você precisará entrar novamente.', UI.logout, 'Sair');
       if (action === 'export') return download(C.csv(selectedRows()), `nexora-extrato-${new Date().toISOString().slice(0, 10)}.csv`);
-      if (action === 'export-legacy') return exportLegacy();
     }
     const rotateWebhook = event.target.closest('[data-webhook-rotate]')?.dataset.webhookRotate;
     if (rotateWebhook) return rotateWebhookSecret(rotateWebhook);

@@ -31,7 +31,6 @@
 .admin-workspace{display:grid;gap:4px;margin:18px 8px 0;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
 .admin-workspace small{color:var(--muted);font-size:9px;font-weight:700;letter-spacing:.12em}
 .admin-workspace strong{font-size:13px;color:var(--text)}.admin-workspace span{font-size:11px;color:var(--muted)}
-.admin-sidebar>.recent-access{margin:10px 8px 0;padding-top:10px}
 .admin-workspace-count{display:grid;gap:3px;margin:2px 0 8px}.admin-workspace-count:last-child{margin-bottom:0}.admin-workspace-count>span{font-weight:600}.admin-workspace-count>small{margin:0!important;font-size:10px!important}
 .admin-sidebar-caption{padding-top:19px}
 .admin-side-nav{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-bottom:8px;scrollbar-width:thin}

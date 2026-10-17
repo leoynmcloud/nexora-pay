@@ -7,13 +7,13 @@
   <link rel="apple-touch-icon" href="nexora-icon.png">
   <link rel="preconnect" href="https://ouqbpslyfnanajkkxrcu.supabase.co" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=2.4"><link rel="stylesheet" href="auth.css?v=2.4"><link rel="stylesheet" href="nexora-app.css?v=2.4"><link rel="stylesheet" href="onboarding.css?v=2.4"><link rel="stylesheet" href="mobile-final.css?v=2.4">
+  <link rel="stylesheet" href="styles.css?v=2.5"><link rel="stylesheet" href="auth.css?v=2.5"><link rel="stylesheet" href="nexora-app.css?v=2.5"><link rel="stylesheet" href="onboarding.css?v=2.6"><link rel="stylesheet" href="mobile-final.css?v=2.5">
 </head>
 <body class="auth-body onboarding-body">
   <main class="onboarding-shell">
     <header class="onboarding-top"><a class="auth-brand" href="index.html"><img class="brand-logo-img" src="logo-nexora-purple.svg" alt="Nexora Pay"></a><div style="display:flex;gap:8px;align-items:center;"><a class="button outline compact" href="platform.html">Voltar ao painel</a><button class="button outline compact" type="button" data-kyc-logout>Sair</button></div></header>
     <section class="onboarding-card">
-      <div class="onboarding-heading"><span class="eyebrow purple">CONFIGURAÇÃO DE CONTA</span><h1>Ativação da sua conta</h1><p>Preencha os dados básicos para habilitar o recebimento de pagamentos e transferências na sua conta Nexora Pay.</p></div>
+      <div class="onboarding-heading"><span class="eyebrow purple">CONFIGURAÇÃO DE CONTA</span><h1>Ativação da sua conta</h1><p>Envie seus dados para análise e liberação da conta Nexora Pay.</p></div>
       <p class="kyc-operation-warning"><strong>Ativação segura e auditada:</strong> seus dados são protegidos por criptografia de ponta a ponta e enviados para análise e aprovação da equipe Nexora Pay.</p>
       <div class="kyc-status" data-kyc-status role="status" aria-live="polite">Verificando sua conta…</div>
       <form data-kyc-form hidden>
@@ -21,57 +21,49 @@
           <label>Tipo de cadastro<select name="company.account_type" data-account-type required><option value="company">Empresa (CNPJ)</option><option value="individual">Pessoa física (CPF)</option></select></label>
           <label data-account-name-label>Razão social<input name="company.legal_name" autocomplete="organization" maxlength="180" required></label>
           <label data-document-label>CNPJ<input name="company.document_number" data-document-number inputmode="text" autocomplete="off" maxlength="18" placeholder="00.ABC.345/01DE-35" required></label>
-          <label data-company-trade-name data-company-field>Nome fantasia<input name="company.trade_name" autocomplete="organization" maxlength="180" required></label>
+          <label data-company-trade-name data-company-field>Nome fantasia<input name="company.trade_name" autocomplete="organization" maxlength="180"></label>
           <label data-company-representative>Nome completo do representante legal<input name="representative.full_name" autocomplete="name" maxlength="160" required></label>
           <label data-individual-field>Data de nascimento<input name="representative.birth_date" type="date" data-required-for-individual="true"></label>
           <label data-individual-field>Nacionalidade<input name="representative.nationality" maxlength="80" value="Brasileira" data-required-for-individual="true"></label>
           <label class="kyc-check" data-individual-field><input name="representative.pep_declared" type="checkbox"> Declaro ser pessoa politicamente exposta (PEP)</label>
           <label>E-mail da conta<input name="company.email" type="email" autocomplete="email" maxlength="254" readonly required></label>
           <label>Celular / WhatsApp<input name="company.phone" type="tel" autocomplete="tel" maxlength="30" required></label>
-          <label data-company-field>Natureza jurídica<input name="company.legal_form" maxlength="100" placeholder="Ex.: Sociedade Limitada"></label>
-          <label data-company-field>Data de abertura<input name="company.opened_at" type="date"></label>
-          <label data-company-field>CNAE principal<input name="company.primary_cnae" maxlength="20"></label>
-          <label data-company-field>CNAEs secundários<input name="company.secondary_cnaes" maxlength="500" placeholder="Separe por vírgulas"></label>
           <label>CEP<input name="company.postal_code" inputmode="numeric" autocomplete="postal-code" maxlength="10" placeholder="00000-000" required></label>
-          <label>Rua / logradouro<input name="company.address_street" autocomplete="address-line1" maxlength="180" placeholder="Nome da rua ou avenida" required></label>
+          <p class="kyc-hint address-lookup-hint" data-address-lookup-status aria-live="polite">Ao informar o CEP, tentaremos preencher o endereço automaticamente. Confira os dados antes de enviar.</p>
+          <label>Rua<input name="company.address_street" autocomplete="address-line1" maxlength="180" placeholder="Nome da rua ou avenida" required></label>
           <label>Número<input name="company.address_extra" inputmode="text" autocomplete="address-line2" maxlength="20" placeholder="Número" required></label>
           <label>Bairro<input name="company.address_neighborhood" autocomplete="address-level3" maxlength="100" required></label>
           <label>Município<input name="company.address_city" autocomplete="address-level2" maxlength="100" required></label>
           <label>Estado (UF)<input name="company.address_state" autocomplete="address-level1" maxlength="2" required></label>
           <label>País<input name="company.address_country" autocomplete="country-name" maxlength="80" value="Brasil" required></label>
+        </div>
+        <details class="kyc-optional-profile" data-company-field><summary>Perfil comercial avançado <span>Opcional · preencher agora ou depois</span></summary><p class="kyc-hint">Essas estimativas ajudam na análise, mas não bloqueiam a criação da conta. Informe apenas o que já souber.</p><div class="kyc-grid">
+          <label>Natureza jurídica<input name="company.legal_form" maxlength="100" placeholder="Ex.: Sociedade Limitada"></label>
+          <label>Data de abertura<input name="company.opened_at" type="date"></label>
+          <label>CNAE principal<input name="company.primary_cnae" maxlength="20"></label>
+          <label>CNAEs secundários<input name="company.secondary_cnaes" maxlength="500" placeholder="Separe por vírgulas"></label>
           <label>Site<input name="company.website" type="url" maxlength="300" placeholder="https://"></label>
           <label>Redes sociais / outros canais<input name="company.social_urls" maxlength="500" placeholder="Links separados por vírgula"></label>
-          <label class="wide" data-company-field>Atividade e produtos/serviços comercializados<textarea name="company.activity_description" rows="3" maxlength="1500"></textarea></label>
-          <label data-company-field>Faturamento mensal estimado (R$)<input name="company.monthly_revenue_estimate" type="number" min="0" step="0.01"></label>
-          <label data-company-field>TPV mensal esperado (R$)<input name="company.expected_tpv_monthly" type="number" min="0" step="0.01"></label>
-          <label data-company-field>Ticket médio esperado (R$)<input name="company.average_ticket" type="number" min="0" step="0.01"></label>
-          <label data-company-field>Quantidade estimada de transações/mês<input name="company.expected_transactions" type="number" min="0" step="1"></label>
-          <label data-company-field>Regiões/países de atuação<input name="company.operating_regions" maxlength="300"></label>
-          <label data-company-field>Origem esperada dos recursos<input name="company.source_of_funds" maxlength="500"></label>
-          <label data-company-field>Conta de liquidação — banco<input name="settlement.bank_name" maxlength="120"></label>
-          <label data-company-field>Agência<input name="settlement.branch" maxlength="30"></label>
-          <label data-company-field>Conta e dígito<input name="settlement.account_number" maxlength="40"></label>
-          <label data-company-field>Tipo de conta<select name="settlement.account_type"><option value="">Selecione</option><option value="checking">Corrente</option><option value="savings">Poupança</option><option value="payment">Pagamento</option></select></label>
-          <label data-company-field>Chave Pix para liquidação<input name="settlement.pix_key" maxlength="120"></label>
-          <label data-company-field>Documento do titular da conta<input name="settlement.holder_document" maxlength="18"></label>
-          <fieldset class="kyc-methods" data-company-field><legend>Mix estimado de pagamentos</legend><div class="kyc-grid">
-            <label>Pix (%)<input name="company.payment_mix.pix" type="number" min="0" max="100" step="0.1" value="100"></label>
-            <label>Cartão (%)<input name="company.payment_mix.card" type="number" min="0" max="100" step="0.1" value="0"></label>
-            <label>Boleto (%)<input name="company.payment_mix.boleto" type="number" min="0" max="100" step="0.1" value="0"></label>
-          </div><p class="kyc-hint">Métodos de pagamento disponíveis para sua operação comercial.</p></fieldset>
-        </div></fieldset>
-        <fieldset data-kyc-owners-fieldset data-company-field><legend>Sócios, administradores e beneficiários finais (opcional)</legend><p class="kyc-hint">Inclua informações adicionais se desejar.</p><div class="kyc-owner-list" data-kyc-owners></div><button type="button" class="button outline compact" data-kyc-add-owner>Adicionar sócio ou responsável</button></fieldset>
-        <fieldset data-kyc-docs><legend>Documentos para análise (opcional)</legend><p class="kyc-hint">PDF, JPG, PNG ou WebP; até 10 MB por arquivo.</p><div class="kyc-doc-grid">
-          <label data-company-document>Comprovante de CNPJ<input type="file" data-kyc-document="cnpj_proof" data-document-subject="company" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
-          <label data-company-document>Contrato social e alterações<input type="file" data-kyc-document="company_articles" data-document-subject="company" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
-          <label>Documento do representante (frente)<input type="file" data-kyc-document="representative_id_front" data-document-subject="representative" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
-          <label>Documento do representante (verso)<input type="file" data-kyc-document="representative_id_back" data-document-subject="representative" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
-          <label data-company-document>Comprovante de endereço da empresa<input type="file" data-kyc-document="company_address_proof" data-document-subject="company" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
-          <label data-company-document>Comprovante bancário da liquidação<input type="file" data-kyc-document="bank_proof" data-document-subject="company" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
+          <label class="wide">Atividade e produtos/serviços comercializados<textarea name="company.activity_description" rows="3" maxlength="1500"></textarea></label>
+          <label>Volume mensal esperado (R$)<input name="company.expected_tpv_monthly" type="number" min="0" step="0.01"></label>
+          <label>Faturamento mensal estimado (R$)<input name="company.monthly_revenue_estimate" type="number" min="0" step="0.01"></label>
+          <label>Ticket médio estimado (R$)<input name="company.average_ticket" type="number" min="0" step="0.01"></label>
+          <label>Quantidade estimada de transações/mês<input name="company.expected_transactions" type="number" min="0" step="1"></label>
+          <label>Regiões/países de atuação<input name="company.operating_regions" maxlength="300" placeholder="Brasil, por padrão"></label>
+          <label>Origem esperada dos recursos<input name="company.source_of_funds" maxlength="500"></label>
+        </div></details></fieldset>
+        <fieldset data-kyc-owners-fieldset data-company-field><legend>Sócios e beneficiários finais (opcional)</legend><p class="kyc-hint">Você pode informar sócios, administradores e beneficiários finais agora ou complementar depois. Se adicionar uma pessoa, preencha os dados e envie frente e verso do documento dela.</p><div class="kyc-owner-list" data-kyc-owners></div><button type="button" class="button outline compact" data-kyc-add-owner>Adicionar sócio ou responsável</button></fieldset>
+        <fieldset data-kyc-docs><legend>Documentos obrigatórios para análise</legend><p class="kyc-hint">Envie os documentos obrigatórios abaixo. Para empresas, são exigidos os quatro documentos empresariais e a identidade do representante legal. PDF, JPG, PNG ou WebP; até 10 MB por arquivo. Procuração, licença e documentos financeiros são condicionais.</p><div class="kyc-doc-grid">
+          <label data-company-document data-required-document>Comprovante de CNPJ (obrigatório para empresas)<input type="file" data-kyc-document="cnpj_proof" data-document-subject="company" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
+          <label data-company-document data-required-document>Contrato social e alterações (obrigatório para empresas)<input type="file" data-kyc-document="company_articles" data-document-subject="company" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
+          <label data-required-document>Documento do titular/representante legal — frente (obrigatório)<input type="file" data-kyc-document="representative_id_front" data-document-subject="representative" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
+          <label data-required-document>Documento do titular/representante legal — verso (obrigatório)<input type="file" data-kyc-document="representative_id_back" data-document-subject="representative" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
+          <label data-company-document data-required-document>Comprovante de endereço da empresa (obrigatório para empresas)<input type="file" data-kyc-document="company_address_proof" data-document-subject="company" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
+          <label data-company-document data-required-document>Comprovante bancário da liquidação (obrigatório para empresas)<input type="file" data-kyc-document="bank_proof" data-document-subject="company" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
           <label>Procuração (se aplicável)<input type="file" data-kyc-document="power_of_attorney" data-document-subject="representative" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
           <label>Licença da atividade (se aplicável)<input type="file" data-kyc-document="activity_license" data-document-subject="company" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
           <label>Documento financeiro adicional (se solicitado)<input type="file" data-kyc-document="financial_document" data-document-subject="company" accept="image/jpeg,image/png,image/webp,application/pdf"></label>
-          <label>Foto do representante com documento<input type="file" data-kyc-document="additional_document" data-document-subject="representative" accept="image/jpeg,image/png,image/webp"></label>
+          <label data-required-document>Foto do titular/representante com documento (obrigatório)<input type="file" data-kyc-document="additional_document" data-document-subject="representative" accept="image/jpeg,image/png,image/webp"></label>
         </div></fieldset>
         <template data-kyc-owner-template><article class="kyc-owner-row" data-owner-row>
           <label>Nome completo<input data-owner-field="full_name" maxlength="160"></label><label>CPF<input data-owner-field="cpf" inputmode="numeric" maxlength="14"></label>
@@ -93,7 +85,7 @@
     </section>
     <p class="auth-footnote">Nexora Pay &middot; Plataforma segura de pagamentos digitais.</p>
   </main>
-  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="supabase-config.js?v=2.4"></script><script defer src="supabase-client.js?v=2.4"></script><script defer src="site-settings.js?v=2.4"></script>
-  <script defer src="nexora-core.js?v=2.4"></script><script defer src="nexora-ui.js?v=2.4"></script><script defer src="nexora-api.js?v=2.4"></script><script defer src="nexora-icons.js?v=2.4"></script><script defer src="theme-toggle.js?v=2.4"></script><script defer src="brazilian-documents.js?v=2.4"></script><script defer src="onboarding.js?v=2.4"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="supabase-config.js?v=2.5"></script><script defer src="supabase-client.js?v=2.5"></script><script defer src="site-settings.js?v=2.5"></script>
+  <script defer src="nexora-core.js?v=2.5"></script><script defer src="nexora-ui.js?v=2.5"></script><script defer src="nexora-api.js?v=2.5"></script><script defer src="nexora-icons.js?v=2.5"></script><script defer src="theme-toggle.js?v=2.5"></script><script defer src="brazilian-documents.js?v=2.5"></script><script defer src="onboarding.js?v=2.6"></script>
 </body>
 </html>
