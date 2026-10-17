@@ -4,7 +4,7 @@
  * settlement tests must also be implemented and approved.
  */
 export type ProviderAdapterRoute = {
-  adapter: 'asaas' | 'mercadopago' | 'pushinpay';
+  adapter: 'asaas' | 'mercadopago' | 'pushinpay' | 'orusprime';
   sandboxOnly: boolean;
   methods: readonly ('pix' | 'credit_card' | 'debit_card' | 'apple_pay' | 'boleto')[];
   credentialSetup: 'asaas-admin' | 'central' | 'unsupported';
@@ -19,6 +19,7 @@ const routes: Readonly<Record<string, ProviderAdapterRoute>> = Object.freeze({
   mercadopago_production: { adapter: 'mercadopago', sandboxOnly: false, methods: ['pix', 'credit_card'], credentialSetup: 'central', payerRequirements: { email: 'required' }, checkoutDomains: ['mercadopago.com', 'mercadopago.com.br'] },
   mercadopago_leo_production: { adapter: 'mercadopago', sandboxOnly: false, methods: ['pix', 'credit_card'], credentialSetup: 'central', payerRequirements: { email: 'required' }, checkoutDomains: ['mercadopago.com', 'mercadopago.com.br'] },
   pushinpay_production: { adapter: 'pushinpay', sandboxOnly: false, methods: ['pix'], credentialSetup: 'central', payerRequirements: { email: 'optional' }, checkoutDomains: ['pushinpay.com.br'] },
+  orusprime_production: { adapter: 'orusprime', sandboxOnly: false, methods: ['pix'], credentialSetup: 'central', payerRequirements: { email: 'optional' }, checkoutDomains: ['orusprime.com.br'] },
 });
 
 export function providerAdapterRoute(acquirerCode: unknown): ProviderAdapterRoute | null {

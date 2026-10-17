@@ -7,6 +7,7 @@ test('hosted checkout routes supported production providers through provider ada
   assert.equal(hostedCheckoutAdapter('asaas_production'), 'asaas');
   assert.equal(hostedCheckoutAdapter('mercadopago_production'), 'mercadopago');
   assert.equal(hostedCheckoutAdapter('pushinpay_production'), 'pushinpay');
+  assert.equal(hostedCheckoutAdapter('orusprime_production'), 'orusprime');
 });
 
 test('hosted checkout rejects unknown, malformed, and sandbox routes', () => {

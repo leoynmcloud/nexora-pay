@@ -5,15 +5,17 @@ import { providerAdapterCatalog, providerAdapterRoute, registeredProviderCodes }
 
 test('the shared payment registry advertises implemented Pix adapters', () => {
   assert.deepEqual(registeredProviderCodes(), [
-    'asaas_sandbox', 'asaas_production', 'mercadopago_sandbox', 'mercadopago_production', 'mercadopago_leo_production', 'pushinpay_production',
+    'asaas_sandbox', 'asaas_production', 'mercadopago_sandbox', 'mercadopago_production', 'mercadopago_leo_production', 'pushinpay_production', 'orusprime_production',
   ]);
   assert.equal(providerAdapterRoute('mercadopago_sandbox')?.adapter, 'mercadopago');
   assert.equal(providerAdapterRoute('mercadopago_production')?.adapter, 'mercadopago');
   assert.equal(providerAdapterRoute('mercadopago_leo_production')?.adapter, 'mercadopago');
   assert.equal(providerAdapterRoute('pushinpay_production')?.adapter, 'pushinpay');
+  assert.equal(providerAdapterRoute('orusprime_production')?.adapter, 'orusprime');
   assert.deepEqual(providerAdapterRoute('mercadopago_production')?.methods, ['pix', 'credit_card']);
   assert.deepEqual(providerAdapterRoute('mercadopago_leo_production')?.methods, ['pix', 'credit_card']);
   assert.deepEqual(providerAdapterRoute('pushinpay_production')?.methods, ['pix']);
+  assert.deepEqual(providerAdapterRoute('orusprime_production')?.methods, ['pix']);
 });
 
 test('the catalog distinguishes implemented code from production homologation', () => {

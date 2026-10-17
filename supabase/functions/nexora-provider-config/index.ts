@@ -3,6 +3,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { asaasConfiguration, asaasAcquirerMatches } from '../_shared/asaas-config.ts';
 import { encryptProviderCredential } from '../_shared/provider-credentials.ts';
 import { validateMercadoPagoAccessToken } from '../_shared/mercadopago-credentials.ts';
+import { parseOrusPrimeCredentials } from '../_shared/orusprime-adapter.ts';
 import { readBoundedHttpBody } from '../_shared/bounded-http-body.ts';
 const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -129,6 +130,42 @@ Deno.serve(async (request) => {
         const httpStatus = validation.status;
         await validation.body?.cancel().catch(() => undefined);
         return Response.json({ error: `Não foi possível validar o token na Pushin Pay (HTTP ${httpStatus}).` }, { status: 502, headers: cors });
+      }
+      await validation.body?.cancel().catch(() => undefined);
+    } else if (acquirer.code === 'orusprime_production' && acquirer.environment === 'production') {
+      providerLabel = 'Orus Prime · produção';
+      let creds: { publicKey: string; secretKey: string };
+      try {
+        creds = parseOrusPrimeCredentials(apiKey);
+      } catch {
+        return Response.json({
+          error: 'Formato inválido para credenciais Orus Prime. Use o formato chavePublica:chaveSecreta ou JSON {"publicKey":"...","secretKey":"..."}.',
+        }, { status: 400, headers: cors });
+      }
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 10000);
+      let validation: Response;
+      try {
+        validation = await fetch('https://app.orusprime.com.br/api/v1', {
+          method: 'GET',
+          signal: controller.signal,
+          redirect: 'error',
+          headers: {
+            'x-public-key': creds.publicKey,
+            'x-secret-key': creds.secretKey,
+            'Accept': 'application/json',
+            'User-Agent': 'NexoraPay/1.0',
+          },
+        });
+      } finally { clearTimeout(timer); }
+      if (validation.status === 401 || validation.status === 403) {
+        await validation.body?.cancel().catch(() => undefined);
+        return Response.json({ error: 'A Orus Prime rejeitou as chaves de API. Confira a chave pública e a chave secreta informadas.' }, { status: 422, headers: cors });
+      }
+      if (!validation.ok) {
+        const httpStatus = validation.status;
+        await validation.body?.cancel().catch(() => undefined);
+        return Response.json({ error: `Não foi possível validar as chaves na Orus Prime (HTTP ${httpStatus}).` }, { status: 502, headers: cors });
       }
       await validation.body?.cancel().catch(() => undefined);
     } else {

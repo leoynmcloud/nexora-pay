@@ -12,6 +12,8 @@ import { decryptProviderCredential } from '../_shared/provider-credentials.ts';
 import { createMercadoPagoCardPayment, createMercadoPagoPixPayment, findMercadoPagoPixPaymentByReference, getMercadoPagoPixPayment, isDefinitiveMercadoPagoCreateRejection, parseMercadoPagoCardInput, type MercadoPagoCardInput } from '../_shared/mercadopago-adapter.ts';
 import { createPushinPayPixPayment, getPushinPayTransaction } from '../_shared/pushinpay-adapter.ts';
 import { processPushinPayPaymentWebhook } from '../_shared/pushinpay-webhook-core.ts';
+import { createOrusPrimePixPayment, getOrusPrimeTransaction, parseOrusPrimeCredentials, type OrusPrimeNormalizedPayment } from '../_shared/orusprime-adapter.ts';
+import { processOrusPrimePaymentWebhook } from '../_shared/orusprime-webhook-core.ts';
 import { processMercadoPagoPaymentWebhook } from '../_shared/mercadopago-webhook-core.ts';
 import { hostedCheckoutAdapter, hostedCheckoutDomains, hostedCheckoutMethods, hostedCheckoutPayerRequirements, isHostedCheckoutUrlTrusted } from '../_shared/hosted-checkout-providers.ts';
 import {
@@ -543,6 +545,179 @@ async function handlePushinPayPublicPayment(
   }
 }
 
+async function saveOrusPrimeResult(admin: any, attempt: any, result: OrusPrimeNormalizedPayment) {
+  const { error } = await admin.rpc('nexora_provider_save_charge_result', {
+    p_attempt_id: attempt.attempt_id || attempt.id,
+    p_provider_transaction_id: result.providerTransactionId,
+    p_raw_status: result.rawStatusCode || result.status,
+    p_normalized_status: result.status,
+    p_pix_copy_paste: result.pixCopyPaste || null,
+    p_pix_encoded_image: result.qrCodeImage || null,
+    p_checkout_url: result.checkoutUrl || null,
+    p_expires_at: result.expiresAt || null,
+  });
+  if (error) throw new Error('orusprime_payment_persistence_failed');
+  return {
+    transaction_id: attempt.transaction_id,
+    test_mode: attempt.environment === 'sandbox',
+    environment: attempt.environment,
+    provider_reference: result.providerTransactionId,
+    provider_status: result.rawStatusCode || result.status,
+    status: result.status,
+    method: 'pix',
+    pix_copy_paste: result.pixCopyPaste || null,
+    pix_encoded_image: result.qrCodeImage || null,
+    invoice_url: result.checkoutUrl || null,
+    pix_expiration: result.expiresAt || null,
+  };
+}
+
+async function recoverOrusPrimePayment(admin: any, transactionId: string) {
+  const { data: attempt, error } = await admin.from('nexora_payment_attempts')
+    .select('id,transaction_id,provider_code,environment,external_reference,provider_transaction_id,platform_credential_id,acquirer_id,payment_method')
+    .eq('transaction_id', transactionId).maybeSingle();
+  if (error || !attempt || attempt.provider_code !== 'orusprime_production' || attempt.environment !== 'production') return null;
+  const { data: credentialRow } = await admin.from('nexora_platform_provider_credentials')
+    .select('api_key_ciphertext').eq('id', attempt.platform_credential_id).maybeSingle();
+  const encryptionSecret = Deno.env.get('NEXORA_CREDENTIALS_ENCRYPTION_KEY') || '';
+  if (!credentialRow?.api_key_ciphertext || !encryptionSecret) return null;
+  const rawCreds = await decryptProviderCredential(credentialRow.api_key_ciphertext, encryptionSecret);
+  if (!rawCreds) throw new Error('orusprime_credential_missing');
+  const credentials = parseOrusPrimeCredentials(rawCreds);
+  if (!attempt.provider_transaction_id) return null;
+
+  const result = await getOrusPrimeTransaction(credentials, String(attempt.provider_transaction_id));
+  if (!result) return null;
+  const saved = await saveOrusPrimeResult(admin, { ...attempt, attempt_id: attempt.id }, result);
+  if (result.status === 'SUCCEEDED' && result.providerTransactionId) {
+    try {
+      await processOrusPrimePaymentWebhook(admin, {
+        eventId: `checkout_poll:${result.providerTransactionId}`,
+        providerTransactionId: result.providerTransactionId,
+        credentials,
+      });
+    } catch (err) {
+      console.error('checkout_recover_orusprime_confirm_deferred', JSON.stringify({
+        code: err instanceof Error ? err.message : 'confirm_failed',
+      }));
+    }
+  }
+  return saved;
+}
+
+async function handleOrusPrimePublicPayment(
+  admin: any, input: Record<string, unknown>, snapshot: Record<string, any>,
+  payer: ReturnType<typeof normalizeCheckoutPayer>, tokenHash: string, requestHash: string,
+) {
+  let chargeTokenHash = tokenHash;
+  let chargeRequestHash = requestHash;
+  let orderToken: string | undefined = undefined;
+
+  if (!snapshot.parent_link_id && !snapshot.transaction_id && snapshot.status === 'active') {
+    const rawOrderToken = typeof input.order_token === 'string' && input.order_token
+      ? String(input.order_token)
+      : generateCheckoutToken();
+    const orderTokenHash = await publicCheckoutTokenHash(rawOrderToken);
+    if (orderTokenHash) {
+      let { data: childOrder } = await admin.rpc('nexora_checkout_public_snapshot', { p_token_hash: orderTokenHash });
+      if (!childOrder) {
+        const { data: spawned, error: spawnError } = await admin.rpc('nexora_checkout_spawn_order', {
+          p_parent_token_hash: tokenHash,
+          p_order_token_hash: orderTokenHash,
+        });
+        if (!spawnError && spawned) {
+          childOrder = spawned;
+        }
+      }
+      if (childOrder) {
+        chargeTokenHash = orderTokenHash;
+        chargeRequestHash = await checkoutRequestHash(rawOrderToken, String(childOrder.id), payer);
+        orderToken = rawOrderToken;
+      }
+    }
+  }
+
+  const withOrder = (b: Record<string, unknown>) => orderToken ? { ...b, order_token: orderToken } : b;
+
+  const { data: attempt, error } = await admin.rpc('nexora_checkout_public_begin_charge', {
+    p_token_hash: chargeTokenHash, p_request_hash: chargeRequestHash,
+    p_payer_name: payer.name, p_payer_email: payer.email, p_payer_document: payer.document,
+  });
+  if (error || !attempt) return { body: withOrder({ error: 'Não foi possível iniciar o pagamento. Atualize a página ou fale com o lojista.' }), status: 409 };
+  if (attempt.provider_code !== 'orusprime_production' || attempt.environment !== 'production') {
+    return { body: withOrder({ error: 'Este adquirente ainda não está habilitado para este checkout.' }), status: 409 };
+  }
+  if (['paid','expired','canceled'].includes(String(attempt.status))) {
+    return { body: withOrder({ error: 'Este link não está disponível para pagamento.', status: attempt.status }), status: 409 };
+  }
+  const encryptionSecret = Deno.env.get('NEXORA_CREDENTIALS_ENCRYPTION_KEY') || '';
+  if (!encryptionSecret) throw new Error('checkout_encryption_not_configured');
+  const rawCreds = await decryptProviderCredential(String(attempt.api_key_ciphertext || ''), encryptionSecret);
+  if (!rawCreds) throw new Error('orusprime_credential_missing');
+  const credentials = parseOrusPrimeCredentials(rawCreds);
+
+  if (attempt.provider_transaction_id && attempt.status !== 'failed') {
+    const result = await getOrusPrimeTransaction(credentials, String(attempt.provider_transaction_id));
+    const payment = await saveOrusPrimeResult(admin, attempt, result);
+    if (['FAILED', 'CANCELED'].includes(String(result.status))) {
+      return { body: withOrder({ error: 'A cobrança Pix não foi autorizada pelo adquirente. Verifique os dados ou utilize outro meio de pagamento.', status: 'failed', payment }), status: 422 };
+    }
+    return { body: withOrder({ status: 'processing', payment }), status: 200 };
+  }
+
+  if (attempt.should_submit !== true) {
+    return { body: withOrder({ status: 'processing', message: 'Estamos confirmando o pagamento com o adquirente. Não tente pagar novamente.' }), status: 202 };
+  }
+
+  const { data: ledgerAccount, error: ledgerAccountError } = await admin.from('nexora_ledger_accounts')
+    .select('id').eq('business_id', attempt.business_id).eq('owner_id', attempt.owner_id)
+    .eq('account_code', 'merchant_pending').maybeSingle();
+  if (ledgerAccountError || !ledgerAccount?.id) {
+    return { body: withOrder({ error: 'A conta financeira do lojista ainda não está pronta para pagamentos.' }), status: 409 };
+  }
+  const { data: claimed, error: claimError } = await admin.rpc('nexora_provider_mark_payment_attempt_started', {
+    p_attempt_id: attempt.attempt_id, p_lease_token: attempt.lease_token,
+  });
+  if (!claimError && claimed !== true && await wasBlockedBeforeProviderSubmit(admin, String(attempt.attempt_id))) {
+    return { body: withOrder({ error: 'As condições de recebimento mudaram; este pagamento não foi enviado. Peça ao lojista um novo link.' }), status: 409 };
+  }
+  if (claimError || claimed !== true) {
+    return { body: withOrder({ status: 'processing', message: 'Estamos confirmando a tentativa. Não tente pagar novamente.' }), status: 202 };
+  }
+
+  try {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
+    const webhookUrl = supabaseUrl ? `${supabaseUrl.replace(/\/$/, '')}/functions/v1/nexora-orusprime-webhook` : undefined;
+    const result = await createOrusPrimePixPayment(credentials, {
+      identifier: String(attempt.external_reference),
+      valueCents: Number(snapshot.amount_cents),
+      client: {
+        name: payer.name || 'Cliente Nexora',
+        email: payer.email || 'cliente@nexorapay.me',
+        document: payer.document || undefined,
+      },
+      callbackUrl: webhookUrl,
+      metadata: {
+        attempt_id: String(attempt.attempt_id),
+        business_id: String(attempt.business_id),
+      },
+    });
+    const payment = await saveOrusPrimeResult(admin, attempt, result);
+    return { body: withOrder({ status: 'processing', payment: { ...payment, method: 'pix' } }), status: 200 };
+  } catch (err) {
+    const code = err instanceof Error && /^[a-z0-9_]{1,80}$/.test(err.message)
+      ? err.message : 'orusprime_response_uncertain';
+    console.error('orusprime_checkout_attempt_failed', JSON.stringify({ attempt_id: attempt.attempt_id, code }));
+    const { data: failed, error: failError } = await admin.rpc('nexora_provider_fail_charge_attempt', {
+      p_attempt_id: attempt.attempt_id, p_lease_token: attempt.lease_token, p_error_code: code,
+    });
+    if (!failError && failed === true) {
+      return { body: withOrder({ error: 'O adquirente Orus Prime recusou a cobrança. Solicite um novo link ao lojista antes de tentar novamente.' }), status: 422 };
+    }
+    return { body: withOrder({ status: 'processing', message: 'Estamos confirmando o pagamento com o adquirente. Não tente pagar novamente.' }), status: 202 };
+  }
+}
+
 function trustedAsaasInvoiceUrl(value: unknown) {
   return isHostedCheckoutUrlTrusted('asaas_production', value);
 }
@@ -680,6 +855,7 @@ async function recoverPublicPayment(admin: any, transactionId: string) {
     if (!adapter || attempt.environment !== 'production') return null;
     try {
       if (adapter === 'pushinpay') return await recoverPushinPayPayment(admin, transactionId);
+      if (adapter === 'orusprime') return await recoverOrusPrimePayment(admin, transactionId);
       return adapter === 'mercadopago'
         ? await recoverMercadoPagoPayment(admin, transactionId)
         : await recoverNeutralAsaasPaymentByTransaction(admin, transactionId);
@@ -771,6 +947,9 @@ async function handlePublicPayment(admin: any, input: Record<string, unknown>): 
   }
   if (adapter === 'pushinpay') {
     return handlePushinPayPublicPayment(admin,input,snapshot,payer,tokenHash,requestHash);
+  }
+  if (adapter === 'orusprime') {
+    return handleOrusPrimePublicPayment(admin,input,snapshot,payer,tokenHash,requestHash);
   }
   if (adapter !== 'asaas') {
     return { body: { error: 'O adquirente deste link ainda não está disponível para pagamentos.' }, status: 409 };
