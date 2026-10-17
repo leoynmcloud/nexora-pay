@@ -1,0 +1,140 @@
+/* Nexora hero refinement: compact brand lockup and photorealistic rotating Earth. */
+.header .brand { width: 126px; }
+.earth {
+  width: 286px;
+  height: 286px;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+.earth::before { display: none; }
+.earth-canvas { display: block; width: 100%; height: 100%; }
+.globe-halo { background: #4779c9; opacity: .14; }
+@media (max-width: 800px) {
+  .header .brand { width: 116px; }
+  .earth { width: 258px; height: 258px; }
+}
+@media (max-width: 540px) {
+  .header .brand { width: 108px; }
+  .earth { width: 232px; height: 232px; }
+}
+
+
+/* Header logo: transparent, compact, and legible on the dark navigation bar. */
+.header .brand {
+  width: 104px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.header .brand img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Globe routes and nodes are rendered on the same rotating 3D surface. */
+
+.globe-halo { background: #9272ec; opacity: .2; }
+.method-card .method-symbol {
+  width: 25px;
+  height: 25px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 6px;
+  background: rgba(166, 139, 234, .12);
+  color: #d8c8ff;
+  font-style: normal;
+}
+.method-card .method-symbol svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.55;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.method-card .method-symbol-pix {
+  background: transparent;
+  border-radius: 0;
+}
+.method-card .method-symbol-pix img {
+  display: block;
+  width: auto;
+  height: 24px;
+  max-width: none;
+  object-fit: contain;
+  object-position: left center;
+}
+.method-card .method-symbol-crypto {
+  background: rgba(166, 139, 234, .12);
+  color: #d8c8ff;
+  font-size: 14px;
+}
+
+/* Each moving highlight stays on its own connector and payment card. */
+.map-connectors .map-flow {
+  fill: none;
+  stroke: #e4d8ff;
+  stroke-width: 2.1;
+  stroke-linecap: round;
+  stroke-dasharray: .09 .91;
+  stroke-dashoffset: 0;
+  opacity: .95;
+  filter: drop-shadow(0 0 4px rgba(190, 158, 255, .95));
+  animation: nexora-route-flow 5.4s linear infinite;
+}
+.map-connectors .map-flow[data-payment-route="global"] { animation-duration: 5.8s; animation-delay: -1.1s; }
+.map-connectors .map-flow[data-payment-route="pix"] { animation-duration: 4.8s; animation-delay: -2.4s; }
+.map-connectors .map-flow[data-payment-route="card"] { animation-duration: 5.2s; animation-delay: -3.2s; }
+.map-connectors .map-flow[data-payment-route="crypto"] { animation-duration: 4.7s; animation-delay: -1.7s; }
+.map-connectors .map-flow[data-payment-route="boleto"] { animation-duration: 5.9s; animation-delay: -4.1s; }
+.map-connectors .map-flow[data-payment-route="api"] { animation-duration: 5.4s; animation-delay: -2.8s; }
+@keyframes nexora-route-flow {
+  to { stroke-dashoffset: -1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .map-connectors .map-flow {
+    animation: none;
+  }
+}
+
+.earth.earth-fallback {
+  overflow: hidden;
+  border-radius: 50%;
+  background-image:
+    radial-gradient(circle at 34% 29%, rgba(255,255,255,.28), transparent 26%),
+    linear-gradient(90deg, rgba(19,16,39,.06), rgba(9,10,15,.58)),
+    url("earth-global-texture.webp");
+  background-size: 100% 100%, 100% 100%, auto 100%;
+  background-repeat: no-repeat, no-repeat, repeat-x;
+  animation: globe-fallback-spin 40s linear infinite;
+}
+.earth.earth-fallback .earth-canvas { display: none; }
+@keyframes globe-fallback-spin {
+  from { background-position: 0 0, 0 0, 0 0; }
+  to { background-position: 0 0, 0 0, -200% 0; }
+}
+@media (max-width: 800px) {
+  .header .brand { width: 98px; }
+}
+@media (max-width: 540px) {
+  .header .brand { width: 94px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .earth.earth-fallback { animation: none; }
+}

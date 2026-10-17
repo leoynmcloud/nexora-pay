@@ -4,10 +4,9 @@
   if (!target) return;
   if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
   const texts = [
+    'Liquidação transparente no ledger.',
     'Máxima aprovação de vendas.',
     'Pix e Cartão em milissegundos.',
-    'Roteamento inteligente de adquirentes.',
-    'Liquidação transparente no ledger.'
   ];
   let index = 0;
   setInterval(() => {
